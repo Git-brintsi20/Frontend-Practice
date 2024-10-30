@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+/*  font-family: "Playfair Display", serif; */
+
+
+:root{
+  --main-color:#deab5f;
+  --primary-color:black;
+}
+
+/* Utilities */
+button{
+  padding: 10px 30px;
+  background: var(--main-color);
+  border:none;
+  cursor:pointer;
+  transition:.5s ease;
+  color: #100e0f;
+  border-radius: 5%;
+  font-size: larger;
+  font-family: "Playfair Display" , serif ;
+  width:auto;
+  text-shadow: 0px 0px 20px rgb(13, 5, 2);
+}
+button b{
+  color: #100e0f;
+}
+
+
+/* Resets */
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+  color:white;
+  padding: 5px;
+  width:100%;
+}
+
+/* Elements */
+
+body{
+  background-color:black ;
+  position:relative;
+}
+
+html, body {
+  height: 100%; /* Full height */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+
+}
+
+
+/* Nav Bar Starts  */
+nav{
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1;
+  color: white  ;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+img{
+  width:100px;
+  height:auto;
+  border-radius: 100%;
+  margin-left: 5px;
+}
+
+nav h1{
+  font-family: "PlayFair Display", serif;
+  color:#deab5f;
+  font-size: 6rem;
+}
+li{
+  display: inline;
+  list-style-type:none;
+  font-size:1.5rem;
+}
+
+li a{
+  color: aliceblue;
+  text-decoration:none;
+ margin-left: 40px;
+ margin-right: 40px;
+ /* transition: 1s ease; */
+}
+
+li a:hover{
+border-bottom:2px solid var(--main-color);
+}
+
+/* Nav Bar Ends */
+
+/* Header Starts */
+.header{
+  /* Background Image*/
+background-image: url(./images/cappuchino.png);
+background-position:center;
+background-size: contain;
+background-size : 20%;
+background-repeat: no-repeat;
+height:auto;
+/* Display */
+display:flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+position: relative;
+/* styles */
+width:100%;
+margin-top:100px;
+
+}
+
+.header h1{
+  margin-top:0;
+  margin-bottom:340px;
+  padding-bottom:0px;
+  font-size:5.5rem;
+  text-shadow: 0px 0px 20px rgb(235, 135, 110);
+  word-spacing: 30px;
+}
+h2{
+  text-shadow: 0px 0px 20px rgb(241, 221, 216);
+  font-size:5rem;
+  word-spacing: 30px;
+  margin-bottom:20px;
+}
+
+/* header Ends */
+
+/* Story Starts */
+#story{
+  margin-top:120px;
+  height: auto;
+  display: flex;
+  flex-wrap:wrap;
+  justify-content: center;
+  align-items:center;
+  gap: 70px;
+  padding:20px;
+}
+
+
+.img-container img{
+  width:350px;
+  height:350px;
+  border-radius:0;
+   flex:1;
+}
+
+div.img-container{
+  flex:1;
+  max-width:400px;
+  height: 400px;
+}
+
+.content{
+flex:2;
+}
+.title-style{
+display: flex;
+align-items: center;
+justify-content:flex-start;
+}
+
+.title{
+  font-size: 5rem;
+  transform:translate(-650px);
+}
+p{
+  margin-top:10px;
+  margin-bottom:10px;
+  font-size: 1.6rem;
+  transform:translate(100px);
+  text-wrap: wrap;
+}
+.content button{
+  transform:translate(100px);
+  
+}
+/* Story Ends */
+
+/* Products Starts */
+
+.products{
+  margin-top:5rem;
+  margin:100px;
+}
+.title-product{
+  display: flex;
+  justify-content:flex-start;
+}
+.title-product span{
+  width:auto;
+  transform:translate(-85px,30px)
+}
+
+.title-product h1{
+  font-size:5.5rem;
+  transform:translate(-70px);
+}
+
+.cards{
+  display:flex;
+  flex-wrap:wrap;
+  flex-direction:row;
+  justify-content: space-around;
+  align-items: center;
+  transform:translate(-70px);
+  margin-top:80px;
+}
+
+.card {
+  border:5px solid var(--main-color);
+  padding:0px 20px;
+  height:600px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-around;
+  align-items: center;
+  
+}
+.card h1{
+  padding:30px;
+  font-size: 3rem;
+  text-align: center;
+  color:bisque
+}
+.card-img{
+  width:140px;
+  height: 140px;
+  position:absolute;
+  top:-60px;
+  border:3px solid var(--main-color);
+  border-radius:50%;
+}
+
+#card1{
+  background:url(images/Espressojpeg.jpeg);
+  background-position: center;
+  background-size:cover;   
+}
+#card2{
+  background:url(images/Mocha.jpeg);
+  background-position: center;
+  background-size:cover;   
+}
+#card3{
+  background:url(images/cappuchino.png);
+  background-position: center;
+  background-size:cover;   
+}
+.items{
+  display: flex; /* Flexbox for items */
+    flex-direction: column; /* Arrange items in a column */
+    align-items: flex-start; /* Align items to the start */
+    width: 100%;
+}
+.card .items{
+  height:auto;
+  color:#fff;
+  margin:20px 0;
+  font-family: "Playfair Display", serif;
+ 
+}
+.items p{
+  margin: 5px 0;
+  font-size:2rem;
+  margin-left: 30px;
+}
+
+/* Products Ends */
+footer{
+  display: flex;
+  padding:20px;
+  justify-content: space-around;
+  align-items: center;
+  transform:translate(-80px);
+}
+.container p{
+  text-wrap:wrap;
+  width:auto;
+  margin:0;
+  padding:0;
+  line-height:25px;
+  word-spacing: 6px;
+  
+}
+.container h1{
+  font-size: 3rem;
+  margin-left:100px;
+  display:inline-block;
+  text-align: center;
+}
+
+.heading-info span  {
+  color:#deab5f;
+}
+.para span{
+  color:#deab5f;
+  font-size:2rem;
+}
+
+.para{
+  text-align:center;
+  transform: translate(-20px);
+}
+hr{
+  margin:0;
+  padding:0;
+}
