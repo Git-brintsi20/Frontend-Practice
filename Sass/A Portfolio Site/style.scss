@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+// font-family: "Roboto", serif;
+
+@import "./partials/nav.scss";
+@import "./partials/resets.scss";
+@import "./partials/reviews.scss";
+@import "./partials/about.scss";
+@import "./partials/project.scss";
+@import "./partials/header.scss";
+@import "./partials/variables.scss";
+@import "./partials/footer.scss";
+
+body{
+  background: #211f22;
+  
+}

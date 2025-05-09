@@ -1,0 +1,126 @@
+@import "components/resets";
+@import "components/header";
+
+header{
+  height: 10vh;
+  width: 100vw;
+  background-color:rgb(247, 247, 250);
+  position: fixed;
+}
+
+.logo {
+  margin-right: 55vw;
+  margin-left: 10vh;
+}
+
+.section1{
+  background: url(img/Trees.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 90vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;;
+
+  h1{
+    font-size: 5rem;
+    color: aliceblue;
+  }
+  p{
+    max-width: 40vw;
+    text-align: center; 
+  }
+}
+
+//BACKGROUND  SECTION
+.card{
+  height: 80vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  .card-content{
+    width: 400px;
+    height: 300px;
+    padding: 20px;
+    margin:  0 6rem; 
+    font-family: sans-serif;
+
+    h1{
+      font-size: 3rem;
+      font-family: serif;
+    }
+    p{
+    margin:20px 0;
+    margin-bottom: 40px;
+    line-height: 1.5rem;
+    }
+
+    a{
+      text-decoration: none;
+      color:#fff; 
+      background: #000;
+      padding: 10px 20px ;
+    }
+ }
+
+  .card-img{
+    width: 500px;
+  }
+}
+
+//Gallery
+
+.gallery{
+  margin-top: 6rem;
+
+  h1{
+    text-align: center;
+    font-family: sans-serif;
+    margin-bottom: 5rem;
+    font-size: 3rem;
+  }
+  .images{
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: space-between;
+    padding-left: 10vw;
+  }
+  .gallery-img{
+    width: 600px;
+    height: 400px;
+    padding: 20px;
+  }
+
+}
+
+footer{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  input{
+    padding:10px 20px;
+    margin-bottom: 20px;
+  }
+
+  textarea{
+padding:20px;
+width: 420px;
+height:200px;
+margin-bottom:20px;
+  }
+  a{
+    text-decoration: none;
+    color: #fff;
+    background:black;
+    padding: 10px 20px;
+  }
+}

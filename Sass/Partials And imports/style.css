@@ -1,0 +1,144 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+header nav {
+  padding: 20px;
+}
+header nav ul {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  margin-bottom: 1.5rem;
+  display: inline;
+  margin-top: 10px;
+}
+header nav li {
+  list-style: none;
+  display: inline;
+}
+header nav li a {
+  color: rgb(17, 3, 3);
+  text-decoration: none;
+  margin: 20px;
+}
+header nav li a:hover {
+  border-bottom: 2px solid black;
+}
+
+header {
+  height: 10vh;
+  width: 100vw;
+  background-color: rgb(247, 247, 250);
+  position: fixed;
+}
+
+.logo {
+  margin-right: 55vw;
+  margin-left: 10vh;
+}
+
+.section1 {
+  background: url(img/Trees.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.section1 h1 {
+  font-size: 5rem;
+  color: aliceblue;
+}
+.section1 p {
+  max-width: 40vw;
+  text-align: center;
+}
+
+.card {
+  height: 80vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.card .card-content {
+  width: 400px;
+  height: 300px;
+  padding: 20px;
+  margin: 0 6rem;
+  font-family: sans-serif;
+}
+.card .card-content h1 {
+  font-size: 3rem;
+  font-family: serif;
+}
+.card .card-content p {
+  margin: 20px 0;
+  margin-bottom: 40px;
+  line-height: 1.5rem;
+}
+.card .card-content a {
+  text-decoration: none;
+  color: #fff;
+  background: #000;
+  padding: 10px 20px;
+}
+.card .card-img {
+  width: 500px;
+}
+
+.gallery {
+  margin-top: 6rem;
+}
+.gallery h1 {
+  text-align: center;
+  font-family: sans-serif;
+  margin-bottom: 5rem;
+  font-size: 3rem;
+}
+.gallery .images {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
+  padding-left: 10vw;
+}
+.gallery .gallery-img {
+  width: 600px;
+  height: 400px;
+  padding: 20px;
+}
+
+footer {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+footer input {
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+footer textarea {
+  padding: 20px;
+  width: 420px;
+  height: 200px;
+  margin-bottom: 20px;
+}
+footer a {
+  text-decoration: none;
+  color: #fff;
+  background: black;
+  padding: 10px 20px;
+}/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,25 @@
+
+.container{
+  height: 100vh;
+  background: linear-gradient(to right, #4f2d62,#ac39ea);
+}
+  nav{ 
+    font-family: "Roboto", serif;  
+  }
+  
+
+
+  ul{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 40px;
+    margin-top: 20px;
+  }
+
+  li{
+    display: inline;
+    list-style: none;
+    margin-left:30px;
+  }
+
+

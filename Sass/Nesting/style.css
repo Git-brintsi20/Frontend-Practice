@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  background: url(img/download.jpeg) no-repeat right/cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+header nav {
+  border: 2px solid teal;
+}
+header nav ul {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  margin-bottom: 1.5rem;
+}
+header nav li {
+  list-style: none;
+  display: inline;
+}
+header nav li a {
+  color: white;
+  text-decoration: none;
+  margin: 20px;
+}
+header nav li a:hover {
+  border-bottom: 2px solid black;
+}/*# sourceMappingURL=style.css.map */

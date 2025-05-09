@@ -1,0 +1,18 @@
+ .btn{
+  background: transparent;
+  border: none;
+  background: rgb(210,22,94);
+  padding: 10px 20px;
+  color: #fff;
+}
+
+.download-btn{
+  @extend .btn;
+  color: black;
+  background-color: rgb(89,218,89);
+}
+
+.black.btn{
+  @extend.btn;
+  background-color: #fff;
+}

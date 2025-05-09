@@ -1,0 +1,40 @@
+
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+$bg-setting : no-repeat right/cover;
+
+
+header{
+  background: url(img/download.jpeg) $bg-setting;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  nav{
+    border: 2px solid teal;
+
+    ul{
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      margin-bottom: 1.5rem;
+    }
+
+    li{
+      list-style: none;
+      display: inline;
+      a{
+        color: white;
+        text-decoration: none;
+        margin:20px;
+      }
+      a:hover{
+        border-bottom: 2px solid black;
+      }
+    }
+  }
+}
+

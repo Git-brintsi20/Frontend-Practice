@@ -1,0 +1,48 @@
+$main-color: #92f5f5;
+$bg-img : no-repeat  center/cover;
+$main-font:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
+body{
+  background: linear-gradient(#58b1b1,#288b8b);
+}
+
+.cardContainer{
+border: none;
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+align-items: center;
+}
+
+.card{
+  font-family: $main-font;
+  background: $main-color;
+  max-width: 280px;
+  padding: 20px;
+  line-height: 24px;
+  margin: 4rem;
+  position: relative;
+
+}
+
+.img{
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+  border: 5px solid white;
+  position:absolute;
+  right:-30px;
+  top:-30px;
+}
+
+.img1{
+background: url(img/Face.png) $bg-img;
+}
+.img2{
+background: url(img/Face.png) $bg-img;
+}
+.img3{
+background: url(img/Face.png) $bg-img;
+}
+.img4{
+background: url(img/Face.png) $bg-img;
+}
