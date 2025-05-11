@@ -2,175 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import styled from 'styled-components';
-
-const JourneyContainer = styled.div`
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--background-color), var(--primary-color) 70%);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-`;
-
-const PathContainer = styled.div`
-  width: 80%;
-  max-width: 800px;
-  position: relative;
-  z-index: 10;
-`;
-
-const PathLine = styled(motion.div)`
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-  border-radius: 10px;
-  margin: 50px 0;
-  position: relative;
-`;
-
-const PathPoint = styled(motion.div)`
-  width: 40px;
-  height: 40px;
-  background-color: var(--accent-color);
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  left: ${props => props.$position}%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  z-index: 2;
-
-  &::before {
-    content: '${props => props.$number}';
-    color: white;
-    font-weight: bold;
-  }
-`;
-
-const PathContent = styled(motion.div)`
-  padding: 30px;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-`;
-
-const Title = styled.h2`
-  color: var(--primary-color);
-  margin-bottom: 15px;
-`;
-
-const Description = styled.p`
-  margin-bottom: 20px;
-  line-height: 1.7;
-`;
-
-const ContinueButton = styled(motion.button)`
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 12px 30px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: block;
-  margin: 0 auto;
-  margin-top: 20px;
-
-  &:hover {
-    background-color: var(--accent-color);
-  }
-`;
-
-const FloatingPhoto = styled(motion.div)`
-  position: absolute;
-  width: ${props => props.$size}px;
-  height: ${props => props.$size}px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-  top: ${props => props.$top}%;
-  left: ${props => props.$left}%;
-  transform: rotate(${props => props.$rotate}deg);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-const BackgroundText = styled.div`
-  position: absolute;
-  font-size: 250px;
-  font-weight: 900;
-  opacity: 0.05;
-  color: var(--primary-color);
-  pointer-events: none;
-  transform: rotate(-10deg);
-  right: -50px;
-  bottom: -50px;
-
-  @media (max-width: 768px) {
-    font-size: 150px;
-  }
-`;
-
-const MemberSelectionContainer = styled.div`
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  z-index: 10; /* Ensure it's above the path */
-`;
-
-const MemberCard = styled.div`
-  cursor: pointer;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    display: block;
-  }
-
-  h3 {
-    text-align: center;
-    padding: 10px;
-    margin: 0;
-    background-color: white;
-    color: var(--primary-color);
-    font-size: 1rem;
-  }
-
-  &.active {
-    border: 2px solid var(--accent-color);
-  }
-`;
+import '../styles/JourneyPath.css';
 
 const journeySteps = [
   {
     title: "The Beginning of Your Special Day",
     description: "Today is all about you! Select your favorite BTS member to personalize your journey.",
     position: 0,
-    isSelectionStep: true // Mark this as the theme selection step
+    isSelectionStep: true
   },
   {
     title: "A Taste of Purple",
@@ -184,149 +23,270 @@ const journeySteps = [
   },
   {
     title: "Your BTS Birthday Gift",
-    description: "Here it is! A heartfelt letter and a BTS music experience created just for you. Click 'Continue' to see what awaits!",
+    description: "Here it is! A heartfelt letter and a BTS music experience created just for you. Click 'Reveal Surprise' to see what awaits!",
     position: 100
   }
 ];
 
-const FloatingPhotos = () => {
+const FloatingPhotos = ({ theme }) => {
   const photos = [
-    { src: "/assets/images/bts/jk/jk-profile.jpeg", size: 120, top: 15, left: 10, rotate: -10 },
-    { src: "/assets/images/bts/jin/jin-profile.jpeg", size: 150, top: 70, left: 85, rotate: 8 },
-    { src: "/assets/images/bts/jk/album-art.jpeg", size: 140, top: 80, left: 20, rotate: 5 },
-    { src: "/assets/images/bts/jin/album-art.jpeg", size: 130, top: 20, left: 80, rotate: -12 }
+    { src: "/assets/images/bts/jk/jk-profile.jpeg", size: 100, top: 10, left: 5, rotate: -8 },
+    { src: "/assets/images/bts/jin/jin-profile.jpeg", size: 110, top: 85, left: 80, rotate: 6 },
+    { src: "/assets/images/bts/jk/album-art.jpeg", size: 90, top: 75, left: 10, rotate: 4 },
+    { src: "/assets/images/bts/jin/album-art.jpeg", size: 95, top: 15, left: 85, rotate: -10 }
   ];
 
   return (
     <>
       {photos.map((photo, index) => (
-        <FloatingPhoto
+        <motion.div
           key={index}
-          $size={photo.size}
-          $top={photo.top}
-          $left={photo.left}
-          $rotate={photo.rotate}
+          className="floating-photo"
+          style={{
+            width: `${photo.size}px`,
+            height: `${photo.size}px`,
+            top: `${photo.top}%`,
+            left: `${photo.left}%`,
+            position: 'absolute',
+            perspective: '1000px',
+            border: `2px solid ${theme.primary}`
+          }}
           initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 + index * 0.2 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0,
+            rotate: photo.rotate
+          }}
+          transition={{ 
+            delay: 0.5 + index * 0.3,
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut"
+          }}
         >
-          <img src={photo.src} alt="BTS Memory" />
-        </FloatingPhoto>
+          <img src={photo.src} alt="BTS Memory" style={{ width: '100%', height: '100%' }} />
+        </motion.div>
       ))}
     </>
   );
 };
 
+const BTSSymbols = ({ theme }) => {
+  const symbols = ['💜', '⭐', '✨', '🎵', '🎂'];
+  const elements = [];
+  const numberOfElements = 15;
+
+  for (let i = 0; i < numberOfElements; i++) {
+    const initialX = Math.random() * 100;
+    const initialY = Math.random() * 100;
+    const delay = Math.random() * 5;
+    const size = 20 + Math.random() * 20;
+
+    elements.push(
+      <motion.div
+        key={i}
+        className="bts-symbol"
+        initial={{ left: `${initialX}%`, top: `${initialY}%`, opacity: 0.6 }}
+        animate={{ 
+          y: [0, -20, 0],
+          rotate: [0, 10, -10, 0]
+        }}
+        transition={{ 
+          delay,
+          duration: 3 + Math.random() * 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          position: 'absolute',
+          fontSize: `${size}px`,
+          color: theme.primary,
+          zIndex: 2
+        }}
+      >
+        {symbols[i % symbols.length]}
+      </motion.div>
+    );
+  }
+
+  return <div className="bts-symbols-container">{elements}</div>;
+};
+
 const JourneyPath = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [activeMember, setActiveMember] = useState('default'); // Default to all BTS
+  const [activeMember, setActiveMember] = useState('default'); // Default to 'default'
+  const [showConfetti, setShowConfetti] = useState(false);
   const navigate = useNavigate();
-  const { setThemeMode } = useTheme();
+  const { theme, changeThemeNew } = useTheme();
 
   useEffect(() => {
-    // Auto-progress through steps, but skip the selection step
-    if (currentStep < journeySteps.length - 1 && !journeySteps[currentStep].isSelectionStep) {
+    console.log("Current Step:", currentStep, "Active Member:", activeMember); // Debug log
+    if (currentStep === 0 || journeySteps[currentStep].isSelectionStep) {
+      return;
+    }
+
+    if (currentStep < journeySteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep(current => current + 1);
-      }, 5000); // Progress every 5 seconds
-
+      }, 5000);
       return () => clearTimeout(timer);
+    } else {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
     }
-  }, [currentStep]);
+  }, [currentStep, activeMember]); // Added activeMember to ensure updates
+
+  const handleThemeChange = (memberName) => {
+    console.log("Selected Member:", memberName); // Debug log
+    setActiveMember(memberName);
+    changeThemeNew(memberName);
+  };
 
   const handleContinue = () => {
+    if (currentStep === 0 && !activeMember) {
+      alert("Please select a BTS member to personalize your journey!");
+      return;
+    }
+
     if (currentStep < journeySteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate('/letter');
+      console.log("Navigating to /letter with selectedMember:", activeMember); // Debug log
+      navigate('/letter', { state: { selectedMember: activeMember } });
     }
   };
 
-  const handleThemeChange = (memberName) => {
-    setActiveMember(memberName);
-    setThemeMode(memberName);
-    // After selecting a member, progress to the next step
-    if (journeySteps[currentStep].isSelectionStep) {
-      setCurrentStep(currentStep + 1);
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
   const currentJourneyStep = journeySteps[currentStep];
 
   return (
-    <JourneyContainer>
-      <BackgroundText>BTS</BackgroundText>
+    <div className="journey-container" style={{ background: theme.gradient || `linear-gradient(135deg, ${theme.background}, ${theme.primary}22)` }}>
+      {showConfetti && (
+        <div className="confetti-container">
+          {[...Array(50)].map((_, i) => (
+            <div 
+              key={i}
+              className="confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${Math.random() * 3 + 2}s`,
+                animationDelay: `${Math.random() * 2}s`,
+                backgroundColor: i % 5 === 0 ? theme.primary : 
+                               i % 5 === 1 ? theme.accent : 
+                               i % 5 === 2 ? '#fff' : 
+                               i % 5 === 3 ? '#ffcd00' : '#ff69b4'
+              }}
+            ></div>
+          ))}
+        </div>
+      )}
 
-      <FloatingPhotos />
+      <div className="background-text">BTS</div>
 
-      <PathContainer>
-        <PathContent
+      <FloatingPhotos theme={theme} />
+      <BTSSymbols theme={theme} />
+
+      <div className="path-container">
+        <motion.div
+          className="path-content"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           key={currentStep}
         >
-          <Title>{currentJourneyStep.title}</Title>
-          <Description>{currentJourneyStep.description}</Description>
+          <h2 className="title" style={{ color: theme.primary }}>{currentJourneyStep.title}</h2>
+          <p className="description">{currentJourneyStep.description}</p>
 
           {currentJourneyStep.isSelectionStep && (
-            <MemberSelectionContainer>
-              <MemberCard
-                className={activeMember === 'jk' ? 'active' : ''}
-                onClick={() => handleThemeChange('jk')}
+            <div className="member-selection-container">
+              <motion.div
+                className={`member-card ${activeMember === 'jungkook' ? 'active' : ''}`}
+                onClick={() => handleThemeChange('jungkook')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <img src="/assets/images/bts/jk/jk-profile.jpeg" alt="Jungkook" />
                 <h3>Jungkook</h3>
-              </MemberCard>
+              </motion.div>
 
-              <MemberCard
-                className={activeMember === 'jin' ? 'active' : ''}
-                onClick={() => handleThemeChange('jin')}
-              >
-                <img src="/assets/images/bts/jin/jin-profile.jpeg" alt="Jin" />
-                <h3>Jin</h3>
-              </MemberCard>
-
-              <MemberCard
-                className={activeMember === 'default' ? 'active' : ''}
+              
+              <motion.div
+                className={`member-card ${activeMember === 'default' ? 'active' : ''}`}
                 onClick={() => handleThemeChange('default')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <img src="/assets/images/bts/bts-main.jpeg" alt="BTS" />
+                <img src="/assets/images/bts/group/bts-main.jpeg" alt="BTS" />
                 <h3>All BTS</h3>
-              </MemberCard>
-            </MemberSelectionContainer>
+              </motion.div>
+
+              <motion.div
+                className={`member-card ${activeMember === 'jin' ? 'active' : ''}`}
+                onClick={() => handleThemeChange('jin')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <img src="/assets/images/bts/jin/jin.png" alt="Jin" />
+                <h3>Jin</h3>
+              </motion.div>
+
+            </div>
           )}
 
-          {!currentJourneyStep.isSelectionStep && (
-            <ContinueButton
+          <div className="navigation-buttons">
+            {currentStep > 0 && (
+              <motion.button
+                className="back-button"
+                onClick={handleBack}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: `linear-gradient(90deg, ${theme.accent}, ${theme.primary})`,
+                  color: theme.secondary
+                }}
+              >
+                Back
+              </motion.button>
+            )}
+
+            <motion.button
+              className="continue-button"
+              onClick={handleContinue}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleContinue}
+              style={{
+                background: `linear-gradient(90deg, ${theme.primary}, ${theme.accent})`,
+                color: theme.secondary
+              }}
             >
-              Continue
-            </ContinueButton>
-          )}
-        </PathContent>
+              {currentStep === 0 ? 'Select & Continue' : currentStep === journeySteps.length - 1 ? 'Reveal Surprise' : 'Continue'}
+            </motion.button>
+          </div>
+        </motion.div>
 
-        <PathLine
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 2 }}
-        >
+        <div className="path-navigation">
           {journeySteps.map((step, index) => (
-            <PathPoint
+            <motion.div
               key={index}
-              $position={step.position}
-              $number={index + 1}
+              className={`path-step ${index === currentStep ? 'active' : ''} ${index < currentStep ? 'completed' : ''}`}
+              onClick={() => setCurrentStep(index)}
               initial={{ scale: 0 }}
-              animate={{ scale: index <= currentStep ? 1 : 0 }}
-              transition={{ delay: index * 0.2 }}
-              onClick={() => index <= currentStep && setCurrentStep(index)}
-            />
+              animate={{ scale: 1 }}
+              transition={{ duration: 2, delay: index * 1}}
+            >
+              <span className="step-number">{index + 1}</span>
+              <span className="step-title">{step.title}</span>
+            </motion.div>
           ))}
-        </PathLine>
-      </PathContainer>
-    </JourneyContainer>
+        </div>
+      </div>
+    </div>
   );
 };
 

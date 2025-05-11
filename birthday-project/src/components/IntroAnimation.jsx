@@ -1,4 +1,3 @@
-/* src/components/IntroAnimation.js */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,65 +5,43 @@ import { useTheme } from '../context/ThemeContext';
 import '../styles/IntroAnimation.css';
 
 const FloatingElements = () => {
-  const elements = [];
   const { theme } = useTheme();
-  
-  // Create symbols to rotate through for floating elements
-  const symbols = [
-    '💜', // Purple heart
-    '⭐', // Star
-    '✨', // Sparkles
-    '🎵', // Musical note
-    '🎤', // Microphone
-  ];
-  
-  // Create 30 floating elements with BTS symbols and images
-  for (let i = 0; i < 30; i++) {
-    const size = Math.random() * 40 + 20;
-    const initialX = Math.random() * 100; // Use percentage of viewport width
-    const initialY = Math.random() * 100; // Use percentage of viewport height
-    const duration = Math.random() * 10 + 15;
-    const delay = Math.random() * 5;
-    
+  const symbols = ['💜', '⭐', '✨', '🎵', '🎤'];
+  const elements = [];
+  const numberOfElements = 20;
+
+  for (let i = 0; i < numberOfElements; i++) {
+    const initialX = Math.random() * 100;
+    const initialY = Math.random() * 100;
+    const delay = Math.random() * 6;
+    const size = 20 + Math.random() * 30;
+    const randX = Math.random() * 2 - 1;
+    const randY = Math.random() * 2 - 1;
+
     elements.push(
       <motion.div
         key={i}
         className="floating-element"
-        initial={{ 
-          left: `${initialX}%`, 
-          top: `${initialY}%`, 
-          opacity: 0 
-        }}
-        animate={{
-          left: [`${initialX}%`, `${initialX + (Math.random() * 20 - 10)}%`],
-          top: [`${initialY}%`, `${initialY - (Math.random() * 20 + 5)}%`],
-          opacity: [0, 0.7, 0]
-        }}
-        transition={{
-          duration: duration,
-          delay: delay,
-          repeat: Infinity,
-          repeatType: "reverse"
-        }}
+        initial={{ left: `${initialX}%`, top: `${initialY}%`, opacity: 0.8 }}
         style={{
           position: 'absolute',
-          width: size,
-          height: size,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: i % 3 === 0 ? theme.primary : 'transparent', 
-          borderRadius: i % 2 === 0 ? '50%' : '0%',
-          fontSize: `${size/2}px`,
+          fontSize: `${size / 2.2}px`,
           pointerEvents: 'none',
-          zIndex: 1
+          zIndex: 1,
+          animationDelay: `${delay}s`,
+          '--size': `${size}px`,
+          '--rand-x': randX,
+          '--rand-y': randY
         }}
       >
-        {i % 4 === 0 && symbols[i % symbols.length]}
+        {symbols[i % symbols.length]}
       </motion.div>
     );
   }
-  
+
   return <div className="floating-elements-container">{elements}</div>;
 };
 
@@ -75,10 +52,8 @@ const IntroAnimation = () => {
   const { theme } = useTheme();
   
   useEffect(() => {
-    // Simulate loading assets
     const timer = setTimeout(() => {
       setLoading(false);
-      // Show button after animation completes
       setTimeout(() => setShowButton(true), 3000);
     }, 2000);
     
@@ -90,12 +65,18 @@ const IntroAnimation = () => {
   };
   
   return (
-    <div className="intro-animation" style={{ backgroundColor: theme.background }}>
+    <div className="intro-animation">
       <FloatingElements />
       
       {loading ? (
         <div className="loading-spinner">
-          <div className="spinner" style={{ borderColor: theme.primary }}></div>
+          <div 
+            className="spinner" 
+            style={{ 
+              border: `4px solid ${theme.primary}`,
+              borderTop: `4px solid ${theme.secondary}`
+            }}
+          ></div>
           <p style={{ color: theme.text }}>Loading BTS Surprise...</p>
         </div>
       ) : (
@@ -105,7 +86,6 @@ const IntroAnimation = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
-            style={{ color: theme.primary }}
           >
             Happy Birthday!
           </motion.h1>
@@ -124,7 +104,6 @@ const IntroAnimation = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.5 }}
-            style={{ color: theme.text }}
           >
             A special BTS surprise awaits you!
           </motion.p>
@@ -138,8 +117,8 @@ const IntroAnimation = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleContinue}
               style={{ 
-                backgroundColor: theme.primary,
-                color: theme.secondary
+                background: `linear-gradient(90deg, ${theme.primary}, ${theme.secondary})`,
+                color: 'black'
               }}
             >
               Begin Your Journey

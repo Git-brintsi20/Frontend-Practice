@@ -1,199 +1,151 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { getTrackDetails, getTrackPreviewUrl } from '../utils/spotify';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { getTrackPreviewUrl, getBTSTopTracks, BTS_ARTIST_ID } from '../utils/spotify';
 
-const AudioContext = createContext();
+const AudioContext = createContext({
+  playTrack: () => {},
+  pauseTrack: () => {},
+  isPlaying: false,
+  currentTrack: null,
+  seek: 0,
+  duration: 0,
+  setVolume: () => {},
+  volume: 1,
+  nextTrack: () => {},
+  previousTrack: () => {},
+  seekTo: () => {}
+});
 
 export const useAudio = () => useContext(AudioContext);
-
-// BTS songs list with Spotify IDs
-const BTS_SONGS = [
-  '0WNGsQ1oAuHzNTk8jivBKW', // "Still With You" - Jungkook
-  '5nTnCfI5oIWR9InXG3caP5', // "Epiphany" - Jin
-  '2FugYpDRl2aVGb5YK6L1Kr', // "Life Goes On"
-  '5Y7RdUWJCF3sLglHfuVjOZ', // "Blue & Grey"
-  '3OBVr1aNHr5IiNZAWOgfQc', // "Dynamite"
-  '7AR0Kc4GrpKDPuVTsOC4Wv', // "Euphoria" - Jungkook
-  '6oHyMGMzxpx8mX4QEgUBDV', // "Moon" - Jin
-];
 
 export const AudioProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [volume, setVolume] = useState(0.7);
   const [seek, setSeek] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
+  const [volume, setVolume] = useState(1);
+  const [trackList, setTrackList] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState({});
   const audioRef = useRef(new Audio());
-  const intervalRef = useRef(null);
-  
-  // Update audio volume when volume state changes
+
+  // Fetch BTS top tracks on mount
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
-  
-  // Clean up on unmount
-  useEffect(() => {
-    const audio = audioRef.current;
-    
-    return () => {
-      clearInterval(intervalRef.current);
-      audio.pause();
-      audio.src = '';
-    };
-  }, []);
-  
-  // Update seek position during playback
-  const startSeekInterval = useCallback(() => {
-    clearInterval(intervalRef.current);
-    
-    intervalRef.current = setInterval(() => {
-      if (audioRef.current.paused) return;
-      
-      setSeek(audioRef.current.currentTime);
-    }, 1000);
-  }, []);
-  
-  // Play a track
-  const playTrack = useCallback(async (trackId) => {
-    if (!trackId) return;
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      // If it's a new track, load it
-      if (currentTrack !== trackId) {
-        audioRef.current.pause();
-        
-        try {
-          // Try to get preview URL from Spotify
-          const previewUrl = await getTrackPreviewUrl(trackId);
-          
+    const fetchTracks = async () => {
+      try {
+        const tracks = await getBTSTopTracks();
+        const filteredTracks = tracks.filter(track => track.preview_url); // Only include tracks with preview URLs
+        setTrackList(filteredTracks);
+
+        // Fetch and store preview URLs
+        const urls = {};
+        for (const track of filteredTracks) {
+          const previewUrl = await getTrackPreviewUrl(track.id);
           if (previewUrl) {
-            audioRef.current.src = previewUrl;
-          } else {
-            // Fallback to a mock URL if no preview available
-            // This is just for the project; in real implementation, handle this better
-            audioRef.current.src = `/assets/sounds/${trackId}.mp3`;
+            urls[track.id] = previewUrl;
           }
-          
-          audioRef.current.load();
-          setCurrentTrack(trackId);
-        } catch (err) {
-          console.error("Error loading track:", err);
-          setError("Failed to load track");
-          setIsLoading(false);
-          return;
         }
+        setPreviewUrls(urls);
+      } catch (error) {
+        console.error('Error fetching BTS tracks:', error);
       }
-      
-      audioRef.current.play()
-        .then(() => {
-          setIsPlaying(true);
-          setDuration(audioRef.current.duration || 210); // Fallback to typical song length
-          startSeekInterval();
-        })
-        .catch(err => {
-          console.error("Error playing track:", err);
-          setError("Failed to play track");
-        });
-      
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Playback error:", err);
-      setError("Error playing track");
-      setIsLoading(false);
-    }
-  }, [currentTrack, startSeekInterval]);
-  
-  // Pause current track
-  const pauseTrack = useCallback(() => {
-    audioRef.current.pause();
-    setIsPlaying(false);
-    clearInterval(intervalRef.current);
+    };
+
+    fetchTracks();
   }, []);
-  
-  // Seek to a specific time
-  const seekTo = useCallback((time) => {
-    if (!audioRef.current.src) return;
-    
-    audioRef.current.currentTime = time;
-    setSeek(time);
-  }, []);
-  
-  // Play next track in playlist
-  const nextTrack = useCallback(() => {
-    if (!currentTrack) return;
-    
-    const currentIndex = BTS_SONGS.indexOf(currentTrack);
-    const nextIndex = (currentIndex + 1) % BTS_SONGS.length;
-    playTrack(BTS_SONGS[nextIndex]);
-  }, [currentTrack, playTrack]);
-  
-  // Play previous track in playlist  
-  const previousTrack = useCallback(() => {
-    if (!currentTrack) return;
-    
-    const currentIndex = BTS_SONGS.indexOf(currentTrack);
-    const prevIndex = (currentIndex - 1 + BTS_SONGS.length) % BTS_SONGS.length;
-    playTrack(BTS_SONGS[prevIndex]);
-  }, [currentTrack, playTrack]);
-  
-  // Set up audio event listeners
+
   useEffect(() => {
     const audio = audioRef.current;
-    
-    const handleEnded = () => {
-      setIsPlaying(false);
-      clearInterval(intervalRef.current);
-      nextTrack();
-    };
-    
-    const handleError = (e) => {
-      console.error('Audio error:', e);
-      setError('Audio playback error');
-      setIsPlaying(false);
-      clearInterval(intervalRef.current);
-    };
-    
-    const handleLoadedMetadata = () => {
+
+    const updateSeek = () => {
+      setSeek(audio.currentTime);
       setDuration(audio.duration);
     };
-    
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    
-    return () => {
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      nextTrack();
     };
-  }, [nextTrack]);
-  
-  // Context value - FIX: Renamed seekTo to seekToPosition to avoid duplicate property name
-  const value = {
-    isPlaying,
-    currentTrack,
-    volume,
-    seek,
-    duration,
-    isLoading,
-    error,
-    playTrack,
-    pauseTrack,
-    setVolume,
-    seekTo,  // This is the function to seek to a specific time
-    nextTrack,
-    previousTrack
+
+    audio.addEventListener('timeupdate', updateSeek);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateSeek);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
+
+  useEffect(() => {
+    audioRef.current.volume = volume;
+  }, [volume]);
+
+  const playTrack = async (trackId) => {
+    const audio = audioRef.current;
+
+    if (!previewUrls[trackId]) {
+      console.error('No preview URL available for track:', trackId);
+      nextTrack();
+      return;
+    }
+
+    if (currentTrack !== trackId) {
+      audio.src = previewUrls[trackId];
+      setCurrentTrack(trackId);
+      setSeek(0);
+    }
+
+    try {
+      await audio.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Error playing track:', error);
+      setIsPlaying(false);
+    }
   };
-  
+
+  const pauseTrack = () => {
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
+
+  const seekTo = (time) => {
+    const audio = audioRef.current;
+    audio.currentTime = time;
+    setSeek(time);
+  };
+
+  const nextTrack = () => {
+    const currentIndex = trackList.findIndex(track => track.id === currentTrack);
+    const nextIndex = (currentIndex + 1) % trackList.length;
+    if (trackList[nextIndex]) {
+      playTrack(trackList[nextIndex].id);
+    }
+  };
+
+  const previousTrack = () => {
+    const currentIndex = trackList.findIndex(track => track.id === currentTrack);
+    const prevIndex = (currentIndex - 1 + trackList.length) % trackList.length;
+    if (trackList[prevIndex]) {
+      playTrack(trackList[prevIndex].id);
+    }
+  };
+
   return (
-    <AudioContext.Provider value={value}>
+    <AudioContext.Provider
+      value={{
+        playTrack,
+        pauseTrack,
+        isPlaying,
+        currentTrack,
+        seek,
+        duration,
+        setVolume,
+        volume,
+        nextTrack,
+        previousTrack,
+        seekTo,
+        trackList
+      }}
+    >
       {children}
     </AudioContext.Provider>
   );

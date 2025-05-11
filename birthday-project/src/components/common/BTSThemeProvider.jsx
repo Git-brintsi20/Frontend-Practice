@@ -1,22 +1,13 @@
-// src/components/common/BTSThemeProvider.jsx
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { BTS_MEMBERS } from '../../utils/constants';
 
-/**
- * A wrapper component that applies BTS member-specific styling
- * @param {Object} props - Component props
- * @param {string} props.member - BTS member name (e.g., 'jungkook', 'jin')
- * @param {React.ReactNode} props.children - Child components
- * @param {string} [props.className] - Additional CSS class names
- */
-const BTSThemeProvider = ({ member, children, className = '' }) => {
+const BTSThemeProvider = ({ member = 'default', children, className = '' }) => {
   const { changeThemeNew } = useTheme();
   
-  // Change theme when member prop changes
   React.useEffect(() => {
     if (member && BTS_MEMBERS[member]) {
-      changeThemeNew(member);
+      changeThemeNew(member); // Member should be 'default', 'jungkook', or 'jin'
     }
   }, [member, changeThemeNew]);
   

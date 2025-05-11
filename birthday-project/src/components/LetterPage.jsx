@@ -1,30 +1,35 @@
-// LetterPage.jsx - Fixed version
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/LetterPage.css';
 
-// These can be customized based on the theme
 const letterContents = {
   default: {
-    greeting: "Dear ARMY Friend,",
-    body: `Today is your special day, and we wanted to celebrate it BTS-style! 
+    greeting: "To My Dearest Sunshine Soul on her Birthday ✨",
+    body: `You recently wrote to me something that I've read and re-read—something that felt like a warm hug wrapped in words. It's honestly one of the kindest, most heartfelt things anyone has ever written for me. And today, on your birthday, I want to try and give you even a fraction of that same warmth back. I know I might stumble with words as I'm in a rush now, but I'll still try, because you are worth it.
 
-As BTS always says, "You never walk alone." We hope this little gift brings you happiness and reminds you of the connection we share through our love for BTS.
+From the very first semester, you've been someone I looked at and thought—"Wow, she's just... light." You give so much. So effortlessly. And with that rare kind of gentleness that isn't loud, but lingers. You're not just a kind person, you're an endlessly giving one. You've always been on the giving side of everything—friendships, time, energy, care. You never ask for anything in return.
 
-The music, the message, the moments - BTS has brought so many people together, and we're grateful to have you as part of this amazing journey.
+But my dear, you have to know—true love, the purest kind, starts with loving yourself first. I've told you this before and I'll say it again....the way you care for others should also reflect in how you care for yourself. You've changed so much since we met, and it fills me with pride to see that. But there's still a little more to go—and that's not a flaw. That's just the magic of being in progress.
 
-Remember Jin's wise words: "You live only once, so do what you want." We hope your birthday is filled with everything that brings you joy.
+When I think of you, I don't just see a friend—I see someone who's a walking BTS playlist. A Jungkook-biased, J-Hope-wrapped sunshine soul who radiates music even in silence. You are "Still With You" to me, always there even when we don't speak. You're "Epiphany" in action, slowly learning, slowly blooming into the version of you that sees herself the way we see her. Your tears are "Blue and Grey" but your heart is full of colors most people don't even know exist.
 
-And as Jungkook would say, "Let's not push ourselves too hard. Let's believe in ourselves. Fighting!"
+And my god—how you dance. How you sing. So freely, so confidently, so beautifully. I watch you and wonder how a person can hold so much art in them and so much girliness in them and yet act like a Bf material..Haha. And I love it. I love every quirky, sexy, graceful bit of it. It's you. And I don't think you realize how magnetic that is.
 
-Happy Birthday! 생일 축하해요!`,
-    closing: "With purple love,",
-    signature: "Your ARMY Family 💜"
+About that April prank thing—let's just close that page now. What we had before, what we still have—it matters way more than that tiny bump. I'm still the same Harshita, just a slightly more sleep-deprived, lil stressed version thanks to the exam season. And I know you might've felt some distance lately, but please don't overthink it. Everyone's just finding their space, including me. But love and friendship? That doesn't change and go to the ruins just like that.
+
+Now coming to the best part: Happy Birthday, My Beautiful Girl!
+Today is your day—your own spotlight moment in the movie of your life. So forget the semester stress for a while, dress up, ting-ting your way into the day like I did on mine, wear your favorite smile and maybe a little lip tint if you feel it (a lip balm is a must, I give u no choice). If I could bake you a cake today, I would, but consider this letter a slice of my heart instead. But I will bake you one, randomly, one day—I promise.
+
+Even if I can't dance with you today or match your high-energy party vibes, know that I'm celebrating you in my heart. Just go out there and have the best time. Eat your favorite food. Listen to your comfort songs. Let BTS guide your playlist—maybe start with Life Goes On because that's exactly what we all need to believe in now.
+
+And when you feel overwhelmed, just remember: you are not here by mistake. You're not stuck. You're growing. Everything begins with you, and everything will be okay. I promise. Just keep that smile on. The world gets warmer when you do.`,
+    closing: "Saranghae. Borahae. I Purple You. Always.",
+    signature: "With so much love, Your Sweetie."
   },
-  jk: {
+  jungkook: {
     greeting: "Dear ARMY,",
     body: `Today is your day! I hope it's as golden as our maknae's voice.
 
@@ -58,66 +63,76 @@ Happy Birthday! 생일 축하해요!`,
 
 const LetterPage = () => {
   const navigate = useNavigate();
-  // Use the updated theme context with both old and new properties
-  const { theme, themeMode } = useTheme();
-  const { playTrack, pauseTrack } = useAudio();
+  const location = useLocation();
+  const { theme, themeMode, changeThemeNew } = useTheme();
+  const { playTrack, pauseTrack, trackList } = useAudio();
   const [isRevealed, setIsRevealed] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const letterRef = useRef(null);
-  
-  // Get the correct letter content based on theme
-  const letterContent = letterContents[themeMode] || letterContents.default;
-  
-  // Play background music on component mount
+
   useEffect(() => {
-    // Choose music based on theme
-    let trackId = '2FugYpDRl2aVGb5YK6L1Kr'; // Default BTS song (Life Goes On)
-    
-    if (themeMode === 'jk') {
-      trackId = '0WNGsQ1oAuHzNTk8jivBKW'; // Jungkook song (Still With You)
-    } else if (themeMode === 'jin') {
-      trackId = '5nTnCfI5oIWR9InXG3caP5'; // Jin song (Epiphany)
+    const selectedMember = location.state?.selectedMember || 'default';
+    if (selectedMember !== themeMode) {
+      changeThemeNew(selectedMember);
     }
-    
-    // Play the track
-    playTrack(trackId);
-    
-    // Clean up function to pause music when component unmounts
+  }, [location.state, themeMode, changeThemeNew]);
+
+  const letterContent = letterContents[themeMode] || letterContents.default;
+
+  useEffect(() => {
+    if (!trackList.length) {
+      return;
+    }
+
+    let selectedTrack = null;
+    if (themeMode === 'jungkook') {
+      selectedTrack = trackList.find(track => track.artists?.some(artist => artist.name === 'Jungkook'));
+    } else if (themeMode === 'jin') {
+      selectedTrack = trackList.find(track => track.artists?.some(artist => artist.name === 'Jin'));
+    } else {
+      selectedTrack = trackList[0]; // Fallback to first track
+    }
+
+    if (selectedTrack) {
+      playTrack(selectedTrack.id);
+    }
+
     return () => {
       pauseTrack();
     };
-  }, [themeMode, playTrack, pauseTrack]);
-  
+  }, [themeMode, playTrack, pauseTrack, trackList]);
+
   const revealLetter = () => {
     setIsRevealed(true);
     setConfetti(true);
-    
-    // Scroll to the letter content
     setTimeout(() => {
       letterRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 500);
-    
-    // Stop confetti after 5 seconds
     setTimeout(() => {
       setConfetti(false);
     }, 5000);
   };
-  
+
   const goToMusicRoom = () => {
-    navigate('/music-room');
+    navigate('/music-room', { state: { selectedMember: themeMode } });
   };
-  
+
+  // Fallback UI in case theme is undefined
+  if (!theme) {
+    return <div style={{ color: 'white', textAlign: 'center' }}>Loading theme...</div>;
+  }
+
   return (
     <div 
       className="letter-page" 
       style={{ 
-        background: theme.gradient || `linear-gradient(to bottom, ${theme.background}, ${theme.primary}22)`,
-        fontFamily: theme.fontFamily
+        background: theme.gradient || `linear-gradient(to bottom, ${theme.background || '#F5F5F5'}, ${theme.primary || '#E1BEE7'}22)`,
+        fontFamily: theme.fontFamily || "'Poppins', sans-serif"
       }}
     >
       {confetti && (
         <div className="confetti-container">
-          {[...Array(50)].map((_, i) => (
+          {[...Array(20)].map((_, i) => ( // Reduced to 20 for performance
             <div 
               key={i}
               className="confetti"
@@ -125,37 +140,37 @@ const LetterPage = () => {
                 left: `${Math.random() * 100}%`,
                 animationDuration: `${Math.random() * 3 + 2}s`,
                 animationDelay: `${Math.random() * 2}s`,
-                backgroundColor: i % 5 === 0 ? theme.primary : 
-                               i % 5 === 1 ? theme.accent : 
+                backgroundColor: i % 5 === 0 ? theme.primary || '#E1BEE7' : 
+                               i % 5 === 1 ? theme.accent || '#CE93D8' : 
                                i % 5 === 2 ? '#fff' : 
                                i % 5 === 3 ? '#ffcd00' : '#ff69b4'
               }}
-            ></div>
+            />
           ))}
         </div>
       )}
       
       <motion.div
         className="letter-container"
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
       >
         {!isRevealed ? (
           <div className="envelope-container">
             <motion.div 
               className="envelope"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               style={{
-                borderColor: theme.primary,
-                backgroundColor: theme.secondary
+                borderColor: theme.primary || '#E1BEE7',
+                backgroundColor: theme.secondary || '#F3E5F5'
               }}
             >
-              <div className="envelope-flap"></div>
+              <div className="envelope-flap" />
               <div 
                 className="envelope-content"
-                style={{ color: theme.text }}
+                style={{ color: theme.text || '#4A148C' }}
               >
                 <h2>A Special Birthday Message</h2>
                 <p>Click to open</p>
@@ -164,8 +179,8 @@ const LetterPage = () => {
                 className="open-button"
                 onClick={revealLetter}
                 style={{
-                  backgroundColor: theme.primary,
-                  color: theme.secondary
+                  backgroundColor: theme.primary || '#E1BEE7',
+                  color: theme.secondary || '#F3E5F5'
                 }}
               >
                 Open Letter
@@ -175,21 +190,21 @@ const LetterPage = () => {
         ) : (
           <motion.div 
             className="letter"
-            initial={{ opacity: 0, y: 30, rotateZ: 5 }}
-            animate={{ opacity: 1, y: 0, rotateZ: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             ref={letterRef}
             style={{
-              backgroundColor: theme.secondary,
-              color: theme.text,
-              boxShadow: `0 10px 30px rgba(0,0,0,0.1), 0 0 0 5px ${theme.primary}33`
+              backgroundColor: theme.secondary || '#F3E5F5',
+              color: theme.text || '#4A148C',
+              boxShadow: `0 5px 15px rgba(0,0,0,0.1), 0 0 0 3px ${theme.primary || '#E1BEE7'}33`
             }}
           >
             <div className="letter-content">
               <div className="letter-header">
                 <img 
                   src={
-                    themeMode === 'jk' ? "/assets/images/bts/jk/jk-profile.jpeg" :
+                    themeMode === 'jungkook' ? "/assets/images/bts/jk/jk-profile.jpeg" :
                     themeMode === 'jin' ? "/assets/images/bts/jin/jin-profile.jpeg" :
                     "/assets/images/bts/bts-main.jpeg"
                   }
@@ -199,7 +214,7 @@ const LetterPage = () => {
               </div>
               
               <div className="letter-body">
-                <h2 className="letter-greeting" style={{ color: theme.primary }}>
+                <h2 className="letter-greeting" style={{ color: theme.primary || '#E1BEE7' }}>
                   {letterContent.greeting}
                 </h2>
                 
@@ -216,11 +231,11 @@ const LetterPage = () => {
               <motion.button
                 className="music-room-button"
                 onClick={goToMusicRoom}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 style={{
-                  backgroundColor: theme.primary,
-                  color: theme.secondary
+                  backgroundColor: theme.primary || '#E1BEE7',
+                  color: theme.secondary || '#F3E5F5'
                 }}
               >
                 Go to Music Room

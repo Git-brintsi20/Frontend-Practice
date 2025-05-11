@@ -40,3 +40,114 @@
 .read-the-docs {
   color: #888;
 }
+
+/* App.css */
+
+/* Loading screen with full viewport width and height */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw; /* Full viewport width */
+  height: 100vh; /* Full viewport height */
+  background: linear-gradient(135deg, #4b0082, #af1ce9, #ff69b4); /* Gradient from deep purple to pink */
+  background-size: 200% 200%; /* For gradient animation */
+  animation: gradientFlow 10s ease infinite; /* Smooth gradient animation */
+  color: #ffffff;
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
+  box-sizing: border-box; /* Ensure padding/margins don't affect size */
+  position: fixed; /* Ensure it stays in place */
+  top: 0;
+  left: 0;
+  z-index: 9999; /* Ensure it’s above other content */
+}
+
+/* Gradient animation for the background */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Style the loading spinner container */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* For pseudo-elements */
+  margin-bottom: 1.5rem;
+}
+
+/* Style the BTS logo animation */
+.bts-logo-animation {
+  width: 120px; /* Adjusted to match the image proportions */
+  height: 120px;
+  object-fit: contain; /* Ensure the image scales properly */
+  animation: glow 2s ease-in-out infinite; /* Subtle glow animation */
+  filter: drop-shadow(0 0 15px rgba(175, 28, 233, 0.5)); /* Purple glow */
+}
+
+/* Glow animation for the logo */
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(175, 28, 233, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(175, 28, 233, 0.7));
+  }
+}
+
+/* Style the loading text */
+.loading-text {
+  font-size: 1.3rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif; /* Clean, modern font for BTS theme */
+  text-align: center;
+  color: #ffffff; /* White text to match the image */
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for readability */
+  animation: textFade 2s ease-in-out infinite; /* Subtle fade animation */
+  padding: 0 20px; /* Prevent overflow on small screens */
+}
+
+/* Text fade animation */
+@keyframes textFade {
+  0%, 100% {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bts-logo-animation {
+    width: 100px;
+    height: 100px;
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bts-logo-animation {
+    width: 80px;
+    height: 80px;
+  }
+
+  .loading-text {
+    font-size: 0.9rem;
+  }
+}

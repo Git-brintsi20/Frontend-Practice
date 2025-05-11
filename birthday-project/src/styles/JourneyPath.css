@@ -1,0 +1,430 @@
+/* src/styles/JourneyPath.css */
+
+/* Container for the journey page */
+.journey-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background: linear-gradient(180deg, rgba(147, 112, 219, 0.95), rgba(221, 160, 221, 0.85));
+  background-size: 200% 200%;
+  animation: gradientShift 20s ease infinite;
+}
+
+/* Subtle gradient animation */
+@keyframes gradientShift {
+  0% { background-position: 50% 0%; }
+  50% { background-position: 50% 100%; }
+  100% { background-position: 50% 0%; }
+}
+
+/* Confetti animation */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  opacity: 0.9;
+  animation: fall 5s linear infinite;
+  border-radius: 50%;
+  background: var(--primary-color, #9370DB);
+}
+
+.confetti:nth-child(even) {
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--accent-color, #DDA0DD);
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) translateX(0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) translateX(20px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* BTS symbols container */
+.bts-symbols-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.bts-symbol {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 5px rgba(147, 112, 219, 0.4));
+}
+
+/* Container for the path */
+.path-container {
+  width: 90%;
+  max-width: 1000px;
+  position: relative;
+  z-index: 10;
+  padding: 50px 20px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Navigation for steps */
+.path-navigation {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.path-step {
+  flex: 1;
+  min-width: 150px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(147, 112, 219, 0.3);
+}
+
+.path-step:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.path-step.active {
+  background: linear-gradient(90deg, var(--primary-color, #9370DB), var(--accent-color, #DDA0DD));
+  color: white;
+  border: none;
+}
+
+.path-step.completed {
+  background: rgba(255, 255, 255, 0.95);
+  position: relative;
+}
+
+.path-step.completed::after {
+  content: '✔';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 16px;
+  color: var(--primary-color, #9370DB);
+}
+
+.step-number {
+  display: block;
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.step-title {
+  display: block;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Content box for each step */
+.path-content {
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+  position: relative;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Title for each step */
+.title {
+  margin-bottom: 25px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--primary-color, #9370DB);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Description text */
+.description {
+  margin-bottom: 30px;
+  line-height: 1.9;
+  color: #333;
+  font-size: 1.2rem;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Navigation buttons container */
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Continue button */
+.continue-button {
+  background: linear-gradient(90deg, var(--primary-color, #9370DB), var(--accent-color, #DDA0DD));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 40px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.continue-button:hover {
+  background: linear-gradient(90deg, var(--accent-color, #DDA0DD), var(--primary-color, #9370DB));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Back button */
+.back-button {
+  background: linear-gradient(90deg, var(--accent-color, #DDA0DD), var(--primary-color, #9370DB));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 40px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background: linear-gradient(90deg, var(--primary-color, #9370DB), var(--accent-color, #DDA0DD));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Floating photo container */
+.floating-photo {
+  position: absolute;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.floating-photo:hover {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Background text (BTS watermark) */
+.background-text {
+  position: absolute;
+  font-size: 200px;
+  font-weight: 900;
+  opacity: 0.1;
+  color: var(--primary-color, #9370DB);
+  pointer-events: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Member selection container */
+.member-selection-container {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Member card */
+.member-card {
+  cursor: pointer;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.95);
+  position: relative;
+  border: 1px solid rgba(147, 112, 219, 0.3);
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.member-card img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.member-card h3 {
+  text-align: center;
+  padding: 15px;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color, #9370DB);
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.member-card.active {
+  border: 2px solid var(--primary-color, #9370DB);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .journey-container {
+    padding: 30px;
+  }
+
+  .path-container {
+    width: 95%;
+    padding: 40px 15px;
+  }
+
+  .path-content {
+    padding: 30px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .description {
+    font-size: 1.1rem;
+  }
+
+  .continue-button,
+  .back-button {
+    padding: 12px 35px;
+    font-size: 1.15rem;
+  }
+
+  .path-navigation {
+    gap: 8px;
+    margin-top: 30px;
+  }
+
+  .path-step {
+    min-width: 120px;
+    padding: 8px;
+  }
+
+  .member-card img {
+    width: 110px;
+    height: 110px;
+  }
+
+  .member-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .background-text {
+    font-size: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .journey-container {
+    padding: 20px;
+  }
+
+  .path-container {
+    width: 100%;
+    padding: 30px 10px;
+  }
+
+  .path-content {
+    padding: 25px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .continue-button,
+  .back-button {
+    padding: 10px 30px;
+    font-size: 1rem;
+  }
+
+  .path-navigation {
+    gap: 5px;
+    margin-top: 20px;
+  }
+
+  .path-step {
+    min-width: 100px;
+    padding: 6px;
+  }
+
+  .step-title {
+    font-size: 0.85rem;
+  }
+
+  .member-card img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .member-card h3 {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .background-text {
+    font-size: 100px;
+  }
+}

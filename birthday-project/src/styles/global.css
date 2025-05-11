@@ -1,36 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+/* global.css */
 
+/* Import optimized Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+/* Define theme variables */
 :root {
-  --primary-color: #8a7de0; /* BTS Purple */
-  --secondary-color: #f8f8ff;
-  --background-color: #fafafa;
-  --text-color: #333333;
-  --accent-color: #ff0080;
+  --primary-color: #9370DB; /* Refined BTS Purple */
+  --secondary-color: #FFFFFF; /* Pure white for contrast */
+  --background-color: #F5F5FA; /* Softer background (unused now) */
+  --text-color: #2A2A2A; /* Darker for better contrast */
+  --accent-color: #FF69B4; /* Softer pink for accents */
+  --accent-gold: #FFD700; /* Gold for stars */
+  --primary-gradient: linear-gradient(90deg, #9370DB, #DDA0DD);
 }
 
+/* Reset and base styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--background-color);
+  background: linear-gradient(135deg, #E6E6FA, #DDA0DD, #E6E6FA);
+  background-size: 200% 200%;
+  animation: gradientShift 20s ease infinite;
   color: var(--text-color);
   line-height: 1.6;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   margin-bottom: 1rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Links */
 a {
   color: var(--primary-color);
   text-decoration: none;
+  position: relative;
   transition: all 0.3s ease;
 }
 
@@ -38,41 +67,69 @@ a:hover {
   color: var(--accent-color);
 }
 
+a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* Buttons */
 button {
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--primary-color);
-  color: white;
+  background: var(--primary-gradient);
+  color: var(--secondary-color);
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 50px;
   font-size: 1rem;
+  font-weight: 600;
   transition: all 0.3s ease;
   outline: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
-  background-color: var(--accent-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 button:active {
-  transform: translateY(0);
+  transform: scale(0.95);
 }
 
+/* Container */
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
+}
+
+/* Full-width utility */
+.full-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 /* BTS-themed elements */
 .bts-symbol {
   position: absolute;
   z-index: 1;
-  opacity: 0.4;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -81,10 +138,10 @@ button:active {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--primary-color);
+  filter: drop-shadow(0 0 5px var(--primary-color));
   top: 10%;
   left: 5%;
-  animation: float 10s infinite ease-in-out;
+  animation: float 8s infinite ease-in-out;
 }
 
 .bts-symbol.heart {
@@ -94,7 +151,8 @@ button:active {
   transform: rotate(45deg);
   top: 75%;
   right: 10%;
-  animation: pulse 4s infinite ease-in-out;
+  animation: pulse 3s infinite ease-in-out;
+  filter: drop-shadow(0 0 5px var(--accent-color));
 }
 
 .bts-symbol.heart:before,
@@ -118,14 +176,15 @@ button:active {
 }
 
 .bts-symbol.star {
-  width: 0; 
-  height: 0; 
+  width: 0;
+  height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 30px solid gold;
+  border-bottom: 30px solid var(--accent-gold);
   top: 30%;
   right: 15%;
-  animation: twinkle 5s infinite ease-in-out;
+  animation: twinkle 4s infinite ease-in-out;
+  filter: drop-shadow(0 0 5px var(--accent-gold));
 }
 
 .bts-symbol.star:after {
@@ -135,7 +194,7 @@ button:active {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-top: 30px solid gold;
+  border-top: 30px solid var(--accent-gold);
   top: 10px;
   left: -15px;
 }
@@ -149,7 +208,8 @@ button:active {
   background-position: center;
   bottom: 15%;
   left: 8%;
-  animation: float 8s infinite ease-in-out;
+  animation: float 7s infinite ease-in-out;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
 }
 
 .bts-symbol.jin {
@@ -161,7 +221,8 @@ button:active {
   background-position: center;
   top: 20%;
   right: 8%;
-  animation: float 7s infinite ease-in-out reverse;
+  animation: float 6s infinite ease-in-out reverse;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
 }
 
 /* Theme switcher styles */
@@ -182,30 +243,43 @@ button:active {
   padding: 8px 15px;
   border-radius: 30px;
   font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.theme-button:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
 }
 
 .theme-button.default {
-  background-color: #8a7de0;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .theme-button.jungkook {
-  background-color: #ff0000;
+  background-color: #FF0000;
+  color: var(--secondary-color);
 }
 
 .theme-button.jin {
-  background-color: #ffb6c1;
+  background-color: #FFB6C1;
+  color: var(--text-color);
 }
 
 .theme-button.dark {
   background-color: #121212;
+  color: var(--secondary-color);
 }
 
 .theme-button.active {
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Birthday specific styles */
+/* Birthday-specific styles */
 .birthday-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -213,7 +287,10 @@ button:active {
 
 .birthday-title {
   font-size: 3rem;
-  color: var(--primary-color);
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -221,15 +298,18 @@ button:active {
   font-size: 1.5rem;
   color: var(--text-color);
   opacity: 0.9;
+  animation: fadeInUp 1s ease-out forwards;
 }
 
 .birthday-message {
   text-align: center;
   margin-top: 3rem;
   padding: 1.5rem;
-  background-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 20px;
+  backdrop-filter: blur(10px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .message-text {
@@ -244,7 +324,7 @@ button:active {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-15px);
   }
 }
 
@@ -253,16 +333,16 @@ button:active {
     transform: rotate(45deg) scale(1);
   }
   50% {
-    transform: rotate(45deg) scale(1.2);
+    transform: rotate(45deg) scale(1.1);
   }
 }
 
 @keyframes twinkle {
   0%, 100% {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   50% {
-    opacity: 1;
+    opacity: 0.9;
   }
 }
 
@@ -279,6 +359,10 @@ button:active {
 
 /* Responsive styles */
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
   .birthday-title {
     font-size: 2.5rem;
   }
@@ -294,5 +378,73 @@ button:active {
   .theme-buttons {
     flex-direction: column;
     align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theme-button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .bts-symbol.purple,
+  .bts-symbol.heart,
+  .bts-symbol.star {
+    width: 30px;
+    height: 30px;
+  }
+
+  .bts-symbol.heart:before,
+  .bts-symbol.heart:after {
+    width: 30px;
+    height: 30px;
+  }
+
+  .bts-symbol.heart:before {
+    top: -15px;
+  }
+
+  .bts-symbol.heart:after {
+    left: -15px;
+  }
+
+  .bts-symbol.star,
+  .bts-symbol.star:after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+  }
+
+  .bts-symbol.star {
+    border-bottom: 20px solid var(--accent-gold);
+  }
+
+  .bts-symbol.star:after {
+    border-top: 20px solid var(--accent-gold);
+    top: 6px;
+    left: -10px;
+  }
+
+  .bts-symbol.jk,
+  .bts-symbol.jin {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .birthday-title {
+    font-size: 2rem;
+  }
+
+  .birthday-subtitle {
+    font-size: 1rem;
+  }
+
+  .message-text {
+    font-size: 0.9rem;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
 }
