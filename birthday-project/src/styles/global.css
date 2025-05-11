@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #8a7de0; /* BTS Purple */
+  --secondary-color: #f8f8ff;
+  --background-color: #fafafa;
+  --text-color: #333333;
+  --accent-color: #ff0080;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+button:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* BTS-themed elements */
+.bts-symbol {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.bts-symbol.purple {
+  background-color: var(--primary-color);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--primary-color);
+  top: 10%;
+  left: 5%;
+  animation: float 10s infinite ease-in-out;
+}
+
+.bts-symbol.heart {
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-color);
+  transform: rotate(45deg);
+  top: 75%;
+  right: 10%;
+  animation: pulse 4s infinite ease-in-out;
+}
+
+.bts-symbol.heart:before,
+.bts-symbol.heart:after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+}
+
+.bts-symbol.heart:before {
+  top: -20px;
+  left: 0;
+}
+
+.bts-symbol.heart:after {
+  top: 0;
+  left: -20px;
+}
+
+.bts-symbol.star {
+  width: 0; 
+  height: 0; 
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 30px solid gold;
+  top: 30%;
+  right: 15%;
+  animation: twinkle 5s infinite ease-in-out;
+}
+
+.bts-symbol.star:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 30px solid gold;
+  top: 10px;
+  left: -15px;
+}
+
+.bts-symbol.jk {
+  width: 50px;
+  height: 50px;
+  background-image: url('/assets/images/bts/jk/silhouette.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  bottom: 15%;
+  left: 8%;
+  animation: float 8s infinite ease-in-out;
+}
+
+.bts-symbol.jin {
+  width: 50px;
+  height: 50px;
+  background-image: url('/assets/images/bts/jin/silhouette.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  top: 20%;
+  right: 8%;
+  animation: float 7s infinite ease-in-out reverse;
+}
+
+/* Theme switcher styles */
+.theme-switcher {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.theme-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.theme-button {
+  padding: 8px 15px;
+  border-radius: 30px;
+  font-size: 0.9rem;
+}
+
+.theme-button.default {
+  background-color: #8a7de0;
+}
+
+.theme-button.jungkook {
+  background-color: #ff0000;
+}
+
+.theme-button.jin {
+  background-color: #ffb6c1;
+}
+
+.theme-button.dark {
+  background-color: #121212;
+}
+
+.theme-button.active {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Birthday specific styles */
+.birthday-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.birthday-title {
+  font-size: 3rem;
+  color: var(--primary-color);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.birthday-subtitle {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.birthday-message {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.message-text {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--text-color);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: rotate(45deg) scale(1);
+  }
+  50% {
+    transform: rotate(45deg) scale(1.2);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .birthday-title {
+    font-size: 2.5rem;
+  }
+  
+  .birthday-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .message-text {
+    font-size: 1rem;
+  }
+  
+  .theme-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}

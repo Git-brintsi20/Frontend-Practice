@@ -1,0 +1,256 @@
+/* LetterPage.css */
+/* Consistent with the main styles and theme you provided */
+
+.letter-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.letter-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Envelope Styles */
+.envelope-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  perspective: 1000px;
+}
+
+.envelope {
+  width: 90%;
+  max-width: 500px;
+  height: 300px;
+  position: relative;
+  background-color: #f8f8ff;
+  border: 2px solid #8a7de0;
+  border-radius: 10px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  padding: 2rem;
+  text-align: center;
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: rgba(138, 125, 224, 0.1);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  z-index: 1;
+  transform-origin: top;
+  transition: transform 0.5s ease;
+}
+
+.envelope:hover .envelope-flap {
+  transform: rotateX(10deg);
+}
+
+.envelope-content {
+  z-index: 2;
+  text-align: center;
+}
+
+.envelope-content h2 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+.envelope-content p {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.open-button {
+  margin-top: 2rem;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Letter Styles */
+.letter {
+  width: 90%;
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+  padding: 2rem;
+}
+
+.letter-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.letter-header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.letter-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--primary-color);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.letter-body {
+  width: 100%;
+  text-align: left;
+  padding: 0 1rem;
+}
+
+.letter-greeting {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.letter-message {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  white-space: pre-line;
+  font-family: 'Poppins', sans-serif;
+}
+
+.letter-closing {
+  font-style: italic;
+  margin-bottom: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.signature {
+  display: block;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.music-room-button {
+  font-size: 1.1rem;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-weight: 500;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  margin-top: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Confetti animation */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--primary-color);
+  top: -10px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .letter {
+    padding: 1.5rem;
+  }
+  
+  .letter-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .letter-greeting {
+    font-size: 1.5rem;
+  }
+  
+  .letter-message {
+    font-size: 1rem;
+  }
+  
+  .music-room-button {
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+  }
+  
+  .envelope {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .letter {
+    padding: 1rem;
+  }
+  
+  .letter-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .letter-greeting {
+    font-size: 1.3rem;
+  }
+  
+  .letter-message {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  .envelope {
+    height: 200px;
+  }
+  
+  .envelope-content h2 {
+    font-size: 1.2rem;
+  }
+}
