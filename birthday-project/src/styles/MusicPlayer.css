@@ -1,11 +1,10 @@
+/* MusicPlayer.css */
 .music-player-container {
   width: 100%;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: var(--background-color);
   position: relative;
   padding: 20px;
   overflow: hidden;
@@ -30,7 +29,7 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   padding: 30px;
   max-width: 600px;
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -226,6 +225,20 @@
   width: 100%;
 }
 
+.playlist::-webkit-scrollbar {
+  width: 5px;
+}
+
+.playlist::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 2.5px;
+}
+
+.playlist::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 2.5px;
+}
+
 .playlist-item {
   padding: 12px 15px;
   border-radius: 8px;
@@ -306,6 +319,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
 }
 
 .visualizer-bar {
@@ -328,5 +343,58 @@
   
   .playlist {
     max-height: 150px;
+  }
+
+  .player-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .player-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-cover {
+    width: 150px;
+    height: 150px;
+  }
+
+  .track-name {
+    font-size: 1.2rem;
+  }
+
+  .track-artist {
+    font-size: 1rem;
+  }
+
+  .track-album {
+    font-size: 0.8rem;
+  }
+
+  .player-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .player-header p {
+    font-size: 0.9rem;
+  }
+
+  .visualizer {
+    height: 40px;
+  }
+
+  .control-button {
+    padding: 8px;
+  }
+
+  .play-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .play-button svg {
+    width: 20px;
+    height: 20px;
   }
 }

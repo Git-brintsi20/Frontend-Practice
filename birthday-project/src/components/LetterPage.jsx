@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 import { useTheme } from '../context/ThemeContext';
+import NavBar from '../components/NavBar';
 import '../styles/LetterPage.css';
 
 const letterContents = {
@@ -90,7 +91,7 @@ const LetterPage = () => {
     } else if (themeMode === 'jin') {
       selectedTrack = trackList.find(track => track.artists?.some(artist => artist.name === 'Jin'));
     } else {
-      selectedTrack = trackList[0]; // Fallback to first track
+      selectedTrack = trackList[0];
     }
 
     if (selectedTrack) {
@@ -117,7 +118,6 @@ const LetterPage = () => {
     navigate('/music-room', { state: { selectedMember: themeMode } });
   };
 
-  // Fallback UI in case theme is undefined
   if (!theme) {
     return <div style={{ color: 'white', textAlign: 'center' }}>Loading theme...</div>;
   }
@@ -130,9 +130,10 @@ const LetterPage = () => {
         fontFamily: theme.fontFamily || "'Poppins', sans-serif"
       }}
     >
+      <NavBar />
       {confetti && (
         <div className="confetti-container">
-          {[...Array(20)].map((_, i) => ( // Reduced to 20 for performance
+          {[...Array(20)].map((_, i) => (
             <div 
               key={i}
               className="confetti"

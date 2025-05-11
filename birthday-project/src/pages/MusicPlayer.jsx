@@ -68,7 +68,8 @@ const MusicPlayer = () => {
     volume,
     nextTrack, 
     previousTrack,
-    seekTo  // Use the correct function name from AudioContext
+    seekTo,
+    trackList
   } = useAudio();
   
   const [currentSong, setCurrentSong] = useState(BTS_SONGS[0]);
@@ -77,15 +78,18 @@ const MusicPlayer = () => {
   const volumeRef = useRef(null);
 
   useEffect(() => {
-    // Find the current song in our BTS_SONGS list based on Spotify ID
-    const song = BTS_SONGS.find(song => song.id === currentTrack) || BTS_SONGS[0];
-    setCurrentSong(song);
-    
-    // Create visualizer bars for animation
+    const song = trackList.find(song => song.id === currentTrack) || BTS_SONGS[0];
+    setCurrentSong({
+      id: song.id,
+      name: song.name,
+      artist: song.artists ? song.artists.map(artist => artist.name).join(', ') : song.artist,
+      album: song.album?.name || song.album,
+      cover: song.album?.images?.[0]?.url || song.cover
+    });
+
     const bars = Array.from({ length: 20 }, () => Math.random() * 50 + 5);
     setVisualizerBars(bars);
-    
-    // Animate visualizer when track is playing
+
     let visualizerInterval;
     if (isPlaying) {
       visualizerInterval = setInterval(() => {
@@ -94,11 +98,11 @@ const MusicPlayer = () => {
         );
       }, 200);
     }
-    
+
     return () => {
       if (visualizerInterval) clearInterval(visualizerInterval);
     };
-  }, [currentTrack, isPlaying]);
+  }, [currentTrack, isPlaying, trackList]);
 
   const handleProgressClick = (e) => {
     if (!progressRef.current) return;
@@ -108,7 +112,7 @@ const MusicPlayer = () => {
     const seekTime = percentage * duration;
     
     if (seekTime >= 0 && seekTime <= duration) {
-      seekTo(seekTime);  // Use the proper seekTo function from context
+      seekTo(seekTime);
     }
   };
 
@@ -251,23 +255,32 @@ const MusicPlayer = () => {
         <div className="playlist-container">
           <div className="playlist-title">Birthday Playlist</div>
           <ul className="playlist">
-            {BTS_SONGS.map(song => (
-              <li 
-                key={song.id}
-                className={`playlist-item ${currentSong.id === song.id ? 'active' : ''}`}
-                onClick={() => handleSongSelect(song.id)}
-              >
-                <img 
-                  src={song.cover} 
-                  alt={song.name} 
-                  className="playlist-item-image" 
-                />
-                <div className="playlist-item-info">
-                  <div className="playlist-item-name">{song.name}</div>
-                  <div className="playlist-item-artist">{song.artist}</div>
-                </div>
-              </li>
-            ))}
+            {trackList.map(song => {
+              const songDetails = {
+                id: song.id,
+                name: song.name,
+                artist: song.artists.map(artist => artist.name).join(', '),
+                album: song.album.name,
+                cover: song.album.images[0]?.url || '/assets/images/bts/bts-main.jpeg'
+              };
+              return (
+                <li 
+                  key={song.id}
+                  className={`playlist-item ${currentSong.id === song.id ? 'active' : ''}`}
+                  onClick={() => handleSongSelect(song.id)}
+                >
+                  <img 
+                    src={songDetails.cover} 
+                    alt={songDetails.name} 
+                    className="playlist-item-image" 
+                  />
+                  <div className="playlist-item-info">
+                    <div className="playlist-item-name">{songDetails.name}</div>
+                    <div className="playlist-item-artist">{songDetails.artist}</div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </motion.div>

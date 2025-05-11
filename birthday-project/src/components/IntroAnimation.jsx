@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import NavBar from '../components/NavBar';
 import '../styles/IntroAnimation.css';
 
 const FloatingElements = () => {
@@ -66,6 +67,8 @@ const IntroAnimation = () => {
   
   return (
     <div className="intro-animation">
+      <NavBar />
+      <div className="navbar-spacer"></div>
       <FloatingElements />
       
       {loading ? (

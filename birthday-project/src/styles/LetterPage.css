@@ -1,20 +1,26 @@
-/* LetterPage.css */
-
+/* Container Styles */
 .letter-page {
   min-height: 100vh;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  background: var(--background-gradient, linear-gradient(to bottom, #F5F5F5, #E1BEE722));
+  font-family: var(--font-family, 'Poppins', sans-serif);
 }
 
+.navbar-spacer {
+  height: 100px;
+}
+
+/* Letter Container */
 .letter-container {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  padding: 2rem 0;
   position: relative;
   z-index: 10;
 }
@@ -25,6 +31,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  min-height: calc(100vh - 100px);
   perspective: 1000px;
 }
 
@@ -33,17 +40,22 @@
   max-width: 500px;
   height: 300px;
   position: relative;
+  background-color: var(--secondary-color, #F3E5F5);
+  border: 2px solid var(--primary-color, #E1BEE7);
   border-radius: 10px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  transition: all 0.4s ease;
-  cursor: pointer;
   padding: 2rem;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+
+.envelope:hover {
+  transform: scale(1.02);
 }
 
 .envelope-flap {
@@ -52,9 +64,8 @@
   left: 0;
   width: 100%;
   height: 50%;
-  background-color: rgba(255, 255, 255, 0.2); /* Fallback background */
+  background-color: rgba(255, 255, 255, 0.2);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  z-index: 1;
   transform-origin: top;
   transition: transform 0.5s ease;
 }
@@ -65,18 +76,21 @@
 
 .envelope-content {
   z-index: 2;
-  text-align: center;
 }
 
 .envelope-content h2 {
   margin-bottom: 1rem;
   font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: var(--text-color, #4A148C);
 }
 
 .envelope-content p {
   font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
   opacity: 0.8;
+  color: var(--text-color, #4A148C);
 }
 
 .open-button {
@@ -84,10 +98,18 @@
   padding: 0.8rem 2rem;
   border: none;
   border-radius: 50px;
+  background-color: var(--primary-color, #E1BEE7);
+  color: var(--secondary-color, #F3E5F5);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
   font-weight: 500;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.open-button:hover {
+  background-color: var(--accent-color, #CE93D8);
 }
 
 /* Letter Styles */
@@ -95,11 +117,11 @@
   width: 90%;
   max-width: 700px;
   margin: 0 auto;
+  background-color: var(--secondary-color, #F3E5F5);
   border-radius: 15px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--primary-color, #E1BEE7)33;
   padding: 2rem;
+  color: var(--text-color, #4A148C);
 }
 
 .letter-content {
@@ -133,6 +155,7 @@
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
   font-family: 'Montserrat', sans-serif;
+  color: var(--primary-color, #E1BEE7);
 }
 
 .letter-message {
@@ -157,18 +180,24 @@
 }
 
 .music-room-button {
-  font-size: 1.1rem;
   padding: 0.8rem 2rem;
   border: none;
   border-radius: 50px;
+  background-color: var(--primary-color, #E1BEE7);
+  color: var(--secondary-color, #F3E5F5);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
   font-weight: 500;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  margin-top: 1rem;
-  font-family: 'Poppins', sans-serif;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Confetti animation */
+.music-room-button:hover {
+  background-color: var(--accent-color, #CE93D8);
+}
+
+/* Confetti Animation */
 .confetti-container {
   position: absolute;
   top: 0;
@@ -185,7 +214,7 @@
   width: 10px;
   height: 10px;
   top: -10px;
-  animation: fall 5s linear forwards; /* Increased duration for smoother fall */
+  animation: fall 5s linear forwards;
 }
 
 @keyframes fall {
@@ -194,59 +223,104 @@
   }
 }
 
-/* Responsive styles */
+/* Responsive Styles */
 @media (max-width: 768px) {
+  .navbar-spacer {
+    height: 90px;
+  }
+
+  .envelope-container {
+    min-height: calc(100vh - 90px);
+  }
+
+  .envelope {
+    height: 250px;
+    padding: 1.5rem;
+  }
+
+  .envelope-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .envelope-content p {
+    font-size: 1rem;
+  }
+
+  .open-button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
   .letter {
     padding: 1.5rem;
   }
-  
+
   .letter-image {
     width: 120px;
     height: 120px;
   }
-  
+
   .letter-greeting {
     font-size: 1.5rem;
   }
-  
+
   .letter-message {
     font-size: 1rem;
   }
-  
+
   .music-room-button {
     font-size: 1rem;
     padding: 0.7rem 1.5rem;
   }
-  
-  .envelope {
-    height: 250px;
-  }
 }
 
 @media (max-width: 480px) {
+  .navbar-spacer {
+    height: 80px;
+  }
+
+  .envelope-container {
+    min-height: calc(100vh - 80px);
+  }
+
+  .envelope {
+    height: 200px;
+    padding: 1rem;
+  }
+
+  .envelope-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .envelope-content p {
+    font-size: 0.9rem;
+  }
+
+  .open-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+  }
+
   .letter {
     padding: 1rem;
   }
-  
+
   .letter-image {
     width: 100px;
     height: 100px;
   }
-  
+
   .letter-greeting {
     font-size: 1.3rem;
   }
-  
+
   .letter-message {
     font-size: 0.9rem;
     line-height: 1.6;
   }
-  
-  .envelope {
-    height: 200px;
-  }
-  
-  .envelope-content h2 {
-    font-size: 1.2rem;
+
+  .music-room-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
   }
 }

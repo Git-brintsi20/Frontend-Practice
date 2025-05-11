@@ -2,6 +2,7 @@
 
 /* Container for the journey page */
 .journey-container {
+  margin-top:180px;
   width: 100%;
   min-height: 100vh;
   position: relative;

@@ -12,7 +12,9 @@ const AudioContext = createContext({
   volume: 1,
   nextTrack: () => {},
   previousTrack: () => {},
-  seekTo: () => {}
+  seekTo: () => {},
+  trackList: [],
+  error: null
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -25,27 +27,41 @@ export const AudioProvider = ({ children }) => {
   const [volume, setVolume] = useState(1);
   const [trackList, setTrackList] = useState([]);
   const [previewUrls, setPreviewUrls] = useState({});
+  const [error, setError] = useState(null);
   const audioRef = useRef(new Audio());
 
-  // Fetch BTS top tracks on mount
   useEffect(() => {
     const fetchTracks = async () => {
       try {
         const tracks = await getBTSTopTracks();
-        const filteredTracks = tracks.filter(track => track.preview_url); // Only include tracks with preview URLs
+        if (!tracks || tracks.length === 0) {
+          throw new Error('No tracks retrieved from Spotify.');
+        }
+
+        const filteredTracks = tracks.filter(track => track.preview_url);
+        if (filteredTracks.length === 0) {
+          console.warn('No tracks with preview URLs available.');
+          setTrackList([]);
+          setError('No preview tracks available for BTS. Try again later.');
+          return;
+        }
+
         setTrackList(filteredTracks);
 
-        // Fetch and store preview URLs
         const urls = {};
         for (const track of filteredTracks) {
-          const previewUrl = await getTrackPreviewUrl(track.id);
-          if (previewUrl) {
-            urls[track.id] = previewUrl;
-          }
+          urls[track.id] = track.preview_url;
         }
         setPreviewUrls(urls);
-      } catch (error) {
-        console.error('Error fetching BTS tracks:', error);
+
+        // Auto-play the first track if available
+        if (filteredTracks.length > 0) {
+          setCurrentTrack(filteredTracks[0].id);
+          playTrack(filteredTracks[0].id);
+        }
+      } catch (err) {
+        console.error('Error fetching BTS tracks:', err);
+        setError('Failed to load BTS tracks. Please check your Spotify API credentials or try again later.');
       }
     };
 
@@ -57,7 +73,7 @@ export const AudioProvider = ({ children }) => {
 
     const updateSeek = () => {
       setSeek(audio.currentTime);
-      setDuration(audio.duration);
+      setDuration(audio.duration || 0);
     };
 
     const handleEnded = () => {
@@ -67,10 +83,16 @@ export const AudioProvider = ({ children }) => {
 
     audio.addEventListener('timeupdate', updateSeek);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', (e) => {
+      console.error('Audio playback error:', e);
+      setError('Failed to play the track. The preview may be unavailable.');
+      nextTrack();
+    });
 
     return () => {
       audio.removeEventListener('timeupdate', updateSeek);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', () => {});
     };
   }, []);
 
@@ -83,6 +105,7 @@ export const AudioProvider = ({ children }) => {
 
     if (!previewUrls[trackId]) {
       console.error('No preview URL available for track:', trackId);
+      setError('This track is unavailable for preview.');
       nextTrack();
       return;
     }
@@ -96,9 +119,11 @@ export const AudioProvider = ({ children }) => {
     try {
       await audio.play();
       setIsPlaying(true);
-    } catch (error) {
-      console.error('Error playing track:', error);
+    } catch (err) {
+      console.error('Error playing track:', err);
+      setError('Failed to play the track. Please try another song.');
       setIsPlaying(false);
+      nextTrack();
     }
   };
 
@@ -109,8 +134,10 @@ export const AudioProvider = ({ children }) => {
 
   const seekTo = (time) => {
     const audio = audioRef.current;
-    audio.currentTime = time;
-    setSeek(time);
+    if (time >= 0 && time <= audio.duration) {
+      audio.currentTime = time;
+      setSeek(time);
+    }
   };
 
   const nextTrack = () => {
@@ -143,7 +170,8 @@ export const AudioProvider = ({ children }) => {
         nextTrack,
         previousTrack,
         seekTo,
-        trackList
+        trackList,
+        error
       }}
     >
       {children}
