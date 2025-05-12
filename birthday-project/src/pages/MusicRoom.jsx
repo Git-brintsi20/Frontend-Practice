@@ -1,4 +1,3 @@
-// MusicRoom.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -21,7 +20,6 @@ const MusicRoom = () => {
       changeThemeNew(selectedMember);
     }
 
-    // Auto-play first track if none is playing
     if (trackList.length > 0 && !currentTrack) {
       playTrack(trackList[0].id);
     }
@@ -50,7 +48,7 @@ const MusicRoom = () => {
 
   return (
     <div
-      className="music-room"
+      className="music-room wave-background"
       style={{
         background: theme.gradient || `linear-gradient(135deg, ${theme.background}, ${theme.primary}22)`,
         fontFamily: theme.fontFamily,
@@ -58,7 +56,9 @@ const MusicRoom = () => {
         '--secondary-color': theme.secondary,
         '--background-color': theme.background,
         '--text-color': theme.text,
-        '--accent-color': theme.accent
+        '--accent-color': theme.accent,
+        overflowY: 'auto',
+        height: '100vh'
       }}
     >
       <NavBar />
@@ -107,9 +107,9 @@ const MusicRoom = () => {
           <div className="error-message" style={{ color: theme.text }}>
             {error}
             <button
-              className="retry-button"
+              className="button"
               onClick={handleRetry}
-              style={{ backgroundColor: theme.primary, color: theme.secondary }}
+              style={{ backgroundColor: theme.primary, color: theme.secondary, marginTop: '10px' }}
             >
               Retry
             </button>

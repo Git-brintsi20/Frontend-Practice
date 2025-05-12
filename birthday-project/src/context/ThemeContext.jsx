@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext({
@@ -8,12 +9,12 @@ const ThemeContext = createContext({
 
 const themes = {
   default: {
-    primary: '#E1BEE7',
-    secondary: '#F3E5F5',
-    background: '#F5F5F5',
-    text: '#4A148C',
-    accent: '#CE93D8',
-    gradient: 'linear-gradient(135deg, #E1BEE7, #F3E5F5)',
+    primary: '#6A1B9A',
+    secondary: '#AB47BC',
+    background: '#4A148C',
+    text: '#FFFFFF',
+    accent: '#FF69B4',
+    gradient: 'linear-gradient(135deg, #4A148C, #6A1B9A, #AB47BC)',
     fontFamily: "'Poppins', sans-serif"
   },
   jungkook: {

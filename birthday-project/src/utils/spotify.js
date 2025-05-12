@@ -1,4 +1,9 @@
-// spotify.js
+const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
+const API_ENDPOINT = 'https://api.spotify.com/v1';
+const BTS_ARTIST_ID = '3Nrfpe0tUJi4K4DXYWgMUX'; // BTS Spotify Artist ID
+const CLIENT_ID = import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_SECRET;
+
 let accessToken = '';
 let tokenExpiryTime = 0;
 

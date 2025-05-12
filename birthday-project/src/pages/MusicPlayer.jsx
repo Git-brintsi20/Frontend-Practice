@@ -1,4 +1,3 @@
-// MusicPlayer.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
@@ -102,11 +101,20 @@ const MusicPlayer = () => {
     playTrack(songId);
   };
 
+  const handleRetry = () => {
+    if (trackList.length > 0 && !currentTrack) {
+      playTrack(trackList[0].id);
+    }
+  };
+
   if (error || !trackList.length) {
     return (
       <div className="music-player-container">
         <div className="error-message" style={{ textAlign: 'center', color: '#fff' }}>
           {error || 'No tracks available. Please try again later.'}
+          <button className="button" onClick={handleRetry} style={{ marginTop: '10px' }}>
+            Retry
+          </button>
         </div>
       </div>
     );

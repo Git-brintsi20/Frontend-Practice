@@ -1,4 +1,3 @@
-// AudioContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { getBTSTopTracks } from '../utils/spotify';
 
@@ -25,7 +24,7 @@ export const AudioProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [seek, setSeek] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.5); // Default to 50% volume
+  const [volume, setVolume] = useState(0.5);
   const [trackList, setTrackList] = useState([]);
   const [previewUrls, setPreviewUrls] = useState({});
   const [error, setError] = useState(null);
@@ -34,7 +33,10 @@ export const AudioProvider = ({ children }) => {
   useEffect(() => {
     const fetchTracks = async () => {
       try {
+        console.log('Fetching BTS top tracks...');
         const tracks = await getBTSTopTracks();
+        console.log('Tracks received:', tracks);
+
         if (!tracks || tracks.length === 0) {
           throw new Error('No tracks retrieved from Spotify.');
         }

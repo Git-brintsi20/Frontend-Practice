@@ -5,13 +5,16 @@
 
 /* Define theme variables */
 :root {
-  --primary-color: #9370DB; /* Refined BTS Purple */
-  --secondary-color: #FFFFFF; /* Pure white for contrast */
-  --background-color: #F5F5FA; /* Softer background (unused now) */
-  --text-color: #2A2A2A; /* Darker for better contrast */
-  --accent-color: #FF69B4; /* Softer pink for accents */
-  --accent-gold: #FFD700; /* Gold for stars */
-  --primary-gradient: linear-gradient(90deg, #9370DB, #DDA0DD);
+  --primary-color: #7837a0; /* Darker BTS purple */
+  --secondary-color: #AB47BC; /* Lighter purple for contrast */
+  --background-color: #4A148C; /* Deep purple base */
+  --text-color: #FFFFFF; /* White for readability */
+  --accent-color: #FF69B4; /* Vibrant pink (retained) */
+  --accent-gold: #FFD700; /* Gold for stars (retained) */
+  --primary-gradient: linear-gradient(90deg, #7e5499, #93539e); /* Updated gradient */
+  --gradient-color-1: #4A148C; /* Deep purple for wave */
+  --gradient-color-2: #6A1B9A; /* Primary purple */
+  --gradient-color-3: #AB47BC; /* Secondary purple */
 }
 
 /* Reset and base styles */
@@ -32,20 +35,85 @@ html, body {
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #E6E6FA, #DDA0DD, #E6E6FA);
-  background-size: 200% 200%;
-  animation: gradientShift 20s ease infinite;
   color: var(--text-color);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Gradient animation */
-@keyframes gradientShift {
+/* Dynamic wave-like gradient background */
+.wave-background {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--gradient-color-1), var(--gradient-color-2), var(--gradient-color-3));
+  background-size: 200% 200%;
+  animation: waveGradient 15s ease infinite;
+}
+
+.wave-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 20, 140, 0.3) 0%,
+    rgba(106, 27, 154, 0.5) 50%,
+    rgba(171, 71, 188, 0.3) 100%
+  );
+  background-size: 200% 200%;
+  animation: waveGradient 20s ease infinite reverse;
+  z-index: -1;
+}
+
+@keyframes waveGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Navbar spacer */
+.navbar-spacer {
+  height: 80px;
+}
+
+/* Confetti animation */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  opacity: 0.8;
+  background: var(--accent-color);
+  animation: fall 5s linear infinite;
+}
+
+.confetti:nth-child(even) {
+  background: var(--accent-gold);
+  width: 8px;
+  height: 12px;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -87,20 +155,19 @@ button {
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   background: var(--primary-gradient);
-  color: var(--secondary-color);
+  color: var(--text-color);
   border: none;
   padding: 12px 24px;
   border-radius: 50px;
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  outline: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 button:active {
@@ -255,12 +322,12 @@ button:active {
 
 .theme-button.default {
   background-color: var(--primary-color);
-  color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .theme-button.jungkook {
   background-color: #FF0000;
-  color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .theme-button.jin {
@@ -270,12 +337,12 @@ button:active {
 
 .theme-button.dark {
   background-color: #121212;
-  color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .theme-button.active {
   border: 2px solid var(--primary-color);
-  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+  box-shadow: 0 0 10px rgba(106, 27, 154, 0.5);
   transform: scale(1.1);
 }
 
@@ -320,41 +387,23 @@ button:active {
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 }
 
 @keyframes pulse {
-  0%, 100% {
-    transform: rotate(45deg) scale(1);
-  }
-  50% {
-    transform: rotate(45deg) scale(1.1);
-  }
+  0%, 100% { transform: rotate(45deg) scale(1); }
+  50% { transform: rotate(45deg) scale(1.1); }
 }
 
 @keyframes twinkle {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.9;
-  }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive styles */
@@ -366,15 +415,15 @@ button:active {
   .birthday-title {
     font-size: 2.5rem;
   }
-  
+
   .birthday-subtitle {
     font-size: 1.2rem;
   }
-  
+
   .message-text {
     font-size: 1rem;
   }
-  
+
   .theme-buttons {
     flex-direction: column;
     align-items: center;
@@ -428,6 +477,10 @@ button:active {
     width: 40px;
     height: 40px;
   }
+
+  .navbar-spacer {
+    height: 70px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -447,4 +500,12 @@ button:active {
     padding: 10px 20px;
     font-size: 0.9rem;
   }
+
+  .navbar-spacer {
+    height: 60px;
+  }
+}
+body {
+  background: linear-gradient(135deg, #e0c3fc, #b266f5, #ff9cc7); /* Soft lavender to purple to pink */
+  transition: background 0.5s ease;
 }

@@ -1,3 +1,5 @@
+
+/* NavBar.css */
 .navbar {
   position: fixed;
   top: 0;
@@ -6,12 +8,13 @@
   height: 80px;
   padding: 1rem 2rem;
   z-index: 1000;
-  background: linear-gradient(90deg, #4B0082, #8A2BE2, #4B0082);
+  background: var(--primary-gradient);
   background-size: 200% 200%;
   animation: waveGradient 5s ease infinite;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
+  border-bottom: 2px solid var(--accent-color);
 }
 
 @keyframes waveGradient {
@@ -23,29 +26,57 @@
 .nav-links {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
 .nav-link {
+  font-family: 'Poppins', sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
   text-decoration: none;
+  color: var(--text-color);
   padding: 0.6rem 1.2rem;
-  border-radius: 25px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
 .nav-link:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--accent-color);
+  color: var(--text-color);
+  transform: scale(1.05);
   font-weight: 700;
-  transform: translateY(-2px);
+}
+
+/* Heart-shaped hover effect */
+.nav-link::before {
+  content: '💜';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-link:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.5;
+}
+
+/* Override global underline */
+.nav-link::after {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -61,6 +92,10 @@
   .nav-link {
     font-size: 1rem;
     padding: 0.5rem 1rem;
+  }
+
+  .nav-link::before {
+    font-size: 1.2rem;
   }
 }
 
@@ -78,5 +113,9 @@
   .nav-link {
     font-size: 0.9rem;
     padding: 0.4rem 0.8rem;
+  }
+
+  .nav-link::before {
+    font-size: 1rem;
   }
 }
