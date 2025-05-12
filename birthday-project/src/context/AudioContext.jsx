@@ -1,5 +1,6 @@
+// AudioContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { getTrackPreviewUrl, getBTSTopTracks, BTS_ARTIST_ID } from '../utils/spotify';
+import { getBTSTopTracks } from '../utils/spotify';
 
 const AudioContext = createContext({
   playTrack: () => {},
@@ -24,7 +25,7 @@ export const AudioProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [seek, setSeek] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(0.5); // Default to 50% volume
   const [trackList, setTrackList] = useState([]);
   const [previewUrls, setPreviewUrls] = useState({});
   const [error, setError] = useState(null);
@@ -38,30 +39,20 @@ export const AudioProvider = ({ children }) => {
           throw new Error('No tracks retrieved from Spotify.');
         }
 
-        const filteredTracks = tracks.filter(track => track.preview_url);
-        if (filteredTracks.length === 0) {
-          console.warn('No tracks with preview URLs available.');
-          setTrackList([]);
-          setError('No preview tracks available for BTS. Try again later.');
-          return;
-        }
-
-        setTrackList(filteredTracks);
-
+        setTrackList(tracks);
         const urls = {};
-        for (const track of filteredTracks) {
+        for (const track of tracks) {
           urls[track.id] = track.preview_url;
         }
         setPreviewUrls(urls);
 
-        // Auto-play the first track if available
-        if (filteredTracks.length > 0) {
-          setCurrentTrack(filteredTracks[0].id);
-          playTrack(filteredTracks[0].id);
+        if (tracks.length > 0) {
+          setCurrentTrack(tracks[0].id);
+          playTrack(tracks[0].id);
         }
       } catch (err) {
         console.error('Error fetching BTS tracks:', err);
-        setError('Failed to load BTS tracks. Please check your Spotify API credentials or try again later.');
+        setError('Failed to load BTS tracks. Please check your internet connection or try again later.');
       }
     };
 
@@ -81,18 +72,20 @@ export const AudioProvider = ({ children }) => {
       nextTrack();
     };
 
+    const handleError = (e) => {
+      console.error('Audio playback error:', e);
+      setError('Failed to play the track. Skipping to next track...');
+      nextTrack();
+    };
+
     audio.addEventListener('timeupdate', updateSeek);
     audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', (e) => {
-      console.error('Audio playback error:', e);
-      setError('Failed to play the track. The preview may be unavailable.');
-      nextTrack();
-    });
+    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('timeupdate', updateSeek);
       audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', () => {});
+      audio.removeEventListener('error', handleError);
     };
   }, []);
 
@@ -104,8 +97,8 @@ export const AudioProvider = ({ children }) => {
     const audio = audioRef.current;
 
     if (!previewUrls[trackId]) {
-      console.error('No preview URL available for track:', trackId);
-      setError('This track is unavailable for preview.');
+      console.error('No preview URL for track:', trackId);
+      setError('This track is unavailable. Skipping to next track...');
       nextTrack();
       return;
     }
@@ -119,10 +112,10 @@ export const AudioProvider = ({ children }) => {
     try {
       await audio.play();
       setIsPlaying(true);
+      setError(null);
     } catch (err) {
       console.error('Error playing track:', err);
-      setError('Failed to play the track. Please try another song.');
-      setIsPlaying(false);
+      setError('Failed to play the track. Skipping to next track...');
       nextTrack();
     }
   };
@@ -145,6 +138,8 @@ export const AudioProvider = ({ children }) => {
     const nextIndex = (currentIndex + 1) % trackList.length;
     if (trackList[nextIndex]) {
       playTrack(trackList[nextIndex].id);
+    } else if (trackList[0]) {
+      playTrack(trackList[0].id);
     }
   };
 

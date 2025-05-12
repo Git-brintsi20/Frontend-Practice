@@ -1,3 +1,4 @@
+// MusicRoom.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -14,27 +15,22 @@ const MusicRoom = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState(true);
 
-  // Debug logs
-  console.log('MusicRoom rendering...');
-  console.log('Theme:', theme);
-  console.log('TrackList:', trackList);
-  console.log('Error:', error);
-  console.log('CurrentTrack:', currentTrack);
-
   useEffect(() => {
     const selectedMember = location.state?.selectedMember || 'default';
     if (selectedMember !== themeMode) {
       changeThemeNew(selectedMember);
     }
-  }, [location.state, themeMode, changeThemeNew]);
+
+    // Auto-play first track if none is playing
+    if (trackList.length > 0 && !currentTrack) {
+      playTrack(trackList[0].id);
+    }
+  }, [location.state, themeMode, changeThemeNew, trackList, currentTrack, playTrack]);
 
   useEffect(() => {
     setShowConfetti(true);
     const confettiTimer = setTimeout(() => setShowConfetti(false), 5000);
-
-    const welcomeTimer = setTimeout(() => {
-      setWelcomeMessage(false);
-    }, 3000);
+    const welcomeTimer = setTimeout(() => setWelcomeMessage(false), 3000);
 
     return () => {
       clearTimeout(confettiTimer);
@@ -71,17 +67,17 @@ const MusicRoom = () => {
       {showConfetti && (
         <div className="confetti-container">
           {[...Array(20)].map((_, i) => (
-            <div 
+            <div
               key={i}
               className="confetti"
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDuration: `${Math.random() * 3 + 2}s`,
                 animationDelay: `${Math.random() * 2}s`,
-                backgroundColor: i % 5 === 0 ? theme.primary : 
-                               i % 5 === 1 ? theme.accent : 
-                               i % 5 === 2 ? '#fff' : 
-                               i % 5 === 3 ? '#ffcd00' : '#ff69b4'
+                backgroundColor: i % 5 === 0 ? theme.primary :
+                                i % 5 === 1 ? theme.accent :
+                                i % 5 === 2 ? '#fff' :
+                                i % 5 === 3 ? '#ffcd00' : '#ff69b4'
               }}
             ></div>
           ))}
@@ -101,7 +97,7 @@ const MusicRoom = () => {
         </motion.div>
       )}
 
-      <motion.div 
+      <motion.div
         className="music-room-container"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -110,7 +106,7 @@ const MusicRoom = () => {
         {error && (
           <div className="error-message" style={{ color: theme.text }}>
             {error}
-            <button 
+            <button
               className="retry-button"
               onClick={handleRetry}
               style={{ backgroundColor: theme.primary, color: theme.secondary }}
@@ -142,5 +138,3 @@ const MusicRoom = () => {
 };
 
 export default MusicRoom;
-
-

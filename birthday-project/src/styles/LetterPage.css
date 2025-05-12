@@ -324,3 +324,172 @@
     padding: 0.6rem 1.2rem;
   }
 }
+
+/* LetterPage.css */
+.letter-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.navbar-spacer {
+  height: 60px; /* Adjust based on your NavBar height */
+}
+
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  opacity: 0.7;
+  animation: fall 5s linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.letter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  min-height: calc(100vh - 100px); /* Account for NavBar and padding */
+  margin-top: 20px;
+}
+
+.envelope-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.envelope {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  border-radius: 10px;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+}
+
+.envelope-flap {
+  width: 0;
+  height: 0;
+  border-left: 250px solid transparent;
+  border-right: 250px solid transparent;
+  border-bottom: 100px solid transparent;
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.envelope-content {
+  padding: 20px;
+}
+
+.envelope-content h2 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.envelope-content p {
+  margin: 10px 0;
+  font-size: 1.2em;
+}
+
+.open-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s;
+}
+
+.letter {
+  width: 100%;
+  max-width: 700px;
+  padding: 30px;
+  border-radius: 10px;
+  margin: 20px 0;
+  position: relative;
+  overflow: visible; /* Ensure content isn’t clipped */
+}
+
+.letter-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.letter-header {
+  text-align: center;
+}
+
+.letter-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.letter-body {
+  text-align: left;
+}
+
+.letter-greeting {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.letter-message {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.letter-closing {
+  font-size: 1.1em;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.signature {
+  font-weight: bold;
+}
+
+.music-room-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s;
+  align-self: center;
+}

@@ -1,14 +1,8 @@
-const CLIENT_ID = import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_ID;
-const CLIENT_SECRET = import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_SECRET;
-const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
-const API_ENDPOINT = 'https://api.spotify.com/v1';
-
-export const BTS_ARTIST_ID = '3Nrfpe0tUJi4K4DXYWgG';
-
+// spotify.js
 let accessToken = '';
 let tokenExpiryTime = 0;
 
-const getAccessToken = async () => {
+const getAccessToken = async (retryCount = 0) => {
   const currentTime = Date.now();
   if (accessToken && currentTime < tokenExpiryTime) {
     return accessToken;
@@ -39,12 +33,16 @@ const getAccessToken = async () => {
     tokenExpiryTime = currentTime + (data.expires_in * 1000);
     return accessToken;
   } catch (error) {
+    if (retryCount < 3) {
+      console.warn(`Retrying access token fetch (${retryCount + 1}/3)...`);
+      return getAccessToken(retryCount + 1);
+    }
     console.error('Error fetching access token:', error);
     throw error;
   }
 };
 
-export const getBTSTopTracks = async () => {
+export const getBTSTopTracks = async (retryCount = 0) => {
   try {
     const token = await getAccessToken();
     const response = await fetch(`${API_ENDPOINT}/artists/${BTS_ARTIST_ID}/top-tracks?market=US`, {
@@ -58,7 +56,13 @@ export const getBTSTopTracks = async () => {
     }
 
     const data = await response.json();
-    return data.tracks || [];
+    const tracks = data.tracks || [];
+    const validTracks = tracks.filter(track => track.preview_url);
+    if (validTracks.length === 0 && retryCount < 3) {
+      console.warn(`No valid tracks found, retrying (${retryCount + 1}/3)...`);
+      return getBTSTopTracks(retryCount + 1);
+    }
+    return validTracks;
   } catch (error) {
     console.error('Error fetching BTS top tracks:', error);
     throw error;

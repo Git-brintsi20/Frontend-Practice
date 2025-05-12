@@ -1,6 +1,7 @@
+// JourneyPath.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import NavBar from '../components/NavBar';
 import '../styles/JourneyPath.css';
@@ -49,21 +50,20 @@ const FloatingPhotos = ({ theme }) => {
             top: `${photo.top}%`,
             left: `${photo.left}%`,
             position: 'absolute',
-            perspective: '1000px',
             border: `2px solid ${theme.primary}`
           }}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ 
-            opacity: 1, 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{
+            opacity: 1,
             y: 0,
             rotate: photo.rotate
           }}
-          transition={{ 
-            delay: 1 + index * 2, // Increased delay: 1s base + 2s per photo
-            duration: 15, // Increased duration for slower animation
+          transition={{
+            delay: index * 0.5,
+            duration: 2,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut"
+            repeatType: 'reverse',
+            ease: 'easeInOut'
           }}
         >
           <img src={photo.src} alt="BTS Memory" style={{ width: '100%', height: '100%' }} />
@@ -76,32 +76,31 @@ const FloatingPhotos = ({ theme }) => {
 const BTSSymbols = ({ theme }) => {
   const symbols = ['💜', '⭐', '✨', '🎵', '🎂'];
   const elements = [];
-  const numberOfElements = 15;
+  const numberOfElements = 10; // Reduced for performance
 
   for (let i = 0; i < numberOfElements; i++) {
     const initialX = Math.random() * 100;
     const initialY = Math.random() * 100;
-    const delay = Math.random() * 8; // Increased max delay to 8s
-    const size = 20 + Math.random() * 20;
+    const delay = Math.random() * 2;
 
     elements.push(
       <motion.div
         key={i}
         className="bts-symbol"
         initial={{ left: `${initialX}%`, top: `${initialY}%`, opacity: 0.6 }}
-        animate={{ 
-          y: [0, -20, 0],
-          rotate: [0, 10, -10, 0]
+        animate={{
+          y: [0, -10, 0],
+          rotate: [0, 5, -5, 0]
         }}
-        transition={{ 
+        transition={{
           delay,
-          duration: 5 + Math.random() * 3, // Increased duration to 5-8s
+          duration: 3,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: 'easeInOut'
         }}
         style={{
           position: 'absolute',
-          fontSize: `${size}px`,
+          fontSize: '24px',
           color: theme.primary,
           zIndex: 2
         }}
@@ -129,13 +128,13 @@ const JourneyPath = () => {
     if (currentStep < journeySteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep(current => current + 1);
-      }, 10000); // Increased to 10 seconds for each step
+      }, 15000); // Increased to 15s
       return () => clearTimeout(timer);
     } else {
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 8000); // Increased confetti duration to 8s
+      setTimeout(() => setShowConfetti(false), 5000);
     }
-  }, [currentStep, activeMember]);
+  }, [currentStep]);
 
   const handleThemeChange = (memberName) => {
     setActiveMember(memberName);
@@ -170,16 +169,16 @@ const JourneyPath = () => {
       {showConfetti && (
         <div className="confetti-container">
           {[...Array(50)].map((_, i) => (
-            <div 
+            <div
               key={i}
               className="confetti"
               style={{
                 left: `${Math.random() * 100}%`,
-                animationDuration: `${Math.random() * 5 + 3}s`, // Increased confetti fall duration
-                animationDelay: `${Math.random() * 3}s`, // Increased delay range
-                backgroundColor: i % 5 === 0 ? theme.primary : 
-                               i % 5 === 1 ? theme.accent : 
-                               i % 5 === 2 ? '#fff' : 
+                animationDuration: `${Math.random() * 3 + 2}s`,
+                animationDelay: `${Math.random() * 1.5}s`,
+                backgroundColor: i % 5 === 0 ? theme.primary :
+                               i % 5 === 1 ? theme.accent :
+                               i % 5 === 2 ? '#fff' :
                                i % 5 === 3 ? '#ffcd00' : '#ff69b4'
               }}
             ></div>
@@ -193,85 +192,88 @@ const JourneyPath = () => {
       <BTSSymbols theme={theme} />
 
       <div className="path-container">
-        <motion.div
-          className="path-content"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }} // Increased duration to 1s, added delay
-          key={currentStep}
-        >
-          <h2 className="title" style={{ color: theme.primary }}>{currentJourneyStep.title}</h2>
-          <p className="description">{currentJourneyStep.description}</p>
+        <AnimatePresence mode="wait">
+          <motion.div
+            className="path-content"
+            key={currentStep}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <h2 className="title" style={{ color: theme.primary }}>{currentJourneyStep.title}</h2>
+            <p className="description">{currentJourneyStep.description}</p>
 
-          {currentJourneyStep.isSelectionStep && (
-            <div className="member-selection-container">
-              <motion.div
-                className={`member-card ${activeMember === 'jungkook' ? 'active' : ''}`}
-                onClick={() => handleThemeChange('jungkook')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }} // Smoother hover/tap transition
-              >
-                <img src="/assets/images/bts/jk/jk-profile.jpeg" alt="Jungkook" />
-                <h3>Jungkook</h3>
-              </motion.div>
+            {currentJourneyStep.isSelectionStep && (
+              <div className="member-selection-container">
+                <motion.div
+                  className={`member-card ${activeMember === 'jungkook' ? 'active' : ''}`}
+                  onClick={() => handleThemeChange('jungkook')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <img src="/assets/images/bts/jk/jk-profile.jpeg" alt="Jungkook" />
+                  <h3>Jungkook</h3>
+                </motion.div>
 
-              <motion.div
-                className={`member-card ${activeMember === 'default' ? 'active' : ''}`}
-                onClick={() => handleThemeChange('default')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-              >
-                <img src="/assets/images/bts/group/bts-main.jpeg" alt="BTS" />
-                <h3>All BTS</h3>
-              </motion.div>
+                <motion.div
+                  className={`member-card ${activeMember === 'default' ? 'active' : ''}`}
+                  onClick={() => handleThemeChange('default')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <img src="/assets/images/bts/group/bts-main.jpeg" alt="BTS" />
+                  <h3>All BTS</h3>
+                </motion.div>
 
-              <motion.div
-                className={`member-card ${activeMember === 'jin' ? 'active' : ''}`}
-                onClick={() => handleThemeChange('jin')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-              >
-                <img src="/assets/images/bts/jin/jin.png" alt="Jin" />
-                <h3>Jin</h3>
-              </motion.div>
-            </div>
-          )}
+                <motion.div
+                  className={`member-card ${activeMember === 'jin' ? 'active' : ''}`}
+                  onClick={() => handleThemeChange('jin')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <img src="/assets/images/bts/jin/jin.png" alt="Jin" />
+                  <h3>Jin</h3>
+                </motion.div>
+              </div>
+            )}
 
-          <div className="navigation-buttons">
-            {currentStep > 0 && (
+            <div className="navigation-buttons">
+              {currentStep > 0 && (
+                <motion.button
+                  className="back-button"
+                  onClick={handleBack}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    background: `linear-gradient(90deg, ${theme.accent}, ${theme.primary})`,
+                    color: theme.secondary
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  Back
+                </motion.button>
+              )}
+
               <motion.button
-                className="back-button"
-                onClick={handleBack}
+                className="continue-button"
+                onClick={handleContinue}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 style={{
-                  background: `linear-gradient(90deg, ${theme.accent}, ${theme.primary})`,
+                  background: `linear-gradient(90deg, ${theme.primary}, ${theme.accent})`,
                   color: theme.secondary
                 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
-                Back
+                {currentStep === 0 ? 'Select & Continue' : currentStep === journeySteps.length - 1 ? 'Reveal Surprise' : 'Continue'}
               </motion.button>
-            )}
-
-            <motion.button
-              className="continue-button"
-              onClick={handleContinue}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                background: `linear-gradient(90deg, ${theme.primary}, ${theme.accent})`,
-                color: theme.secondary
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              {currentStep === 0 ? 'Select & Continue' : currentStep === journeySteps.length - 1 ? 'Reveal Surprise' : 'Continue'}
-            </motion.button>
-          </div>
-        </motion.div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
         <div className="path-navigation">
           {journeySteps.map((step, index) => (
@@ -281,7 +283,7 @@ const JourneyPath = () => {
               onClick={() => setCurrentStep(index)}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 8, delay: index * 3 }} // Increased duration to 8s, delay to 3s per step
+              transition={{ duration: 0.5, delay: index * 0.2, ease: 'easeOut' }}
             >
               <span className="step-number">{index + 1}</span>
               <span className="step-title">{step.title}</span>
