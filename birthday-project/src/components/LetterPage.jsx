@@ -6,10 +6,11 @@ import { useTheme } from '../context/ThemeContext';
 import NavBar from '../components/NavBar';
 import '../styles/LetterPage.css';
 
+// [LetterContents unchanged, keeping it as provided]
 const letterContents = {
   default: {
     greeting: "To My Dearest Sunshine Soul on her Birthday ✨",
-    body: `Hey, my beautiful friend,
+    body: `💜Hola Sweet soul💜
 
 You recently wrote to me something that I've read and re-read—something that felt like a warm hug wrapped in words. It's honestly one of the kindest, most heartfelt things anyone has ever written for me. And today, on your birthday, I want to try and give you even a fraction of that same warmth back. I know I might stumble with words as I'm in a rush now, but I'll still try, because you are worth it.
 
@@ -30,7 +31,7 @@ Even if I can't dance with you today or match your high-energy party vibes, know
 
 And when you feel overwhelmed, just remember: you are not here by mistake. You're not stuck. You're growing. Everything begins with you, and everything will be okay. I promise. Just keep that smile on. The world gets warmer when you do.`,
     closing: "Saranghae. Borahae. I Purple You. Always.",
-    signature: "With so much love, Your Sweetie."
+    signature: "With so much love, Your Sweetie.",
   },
   jungkook: {
     greeting: "Dear ARMY,",
@@ -44,7 +45,7 @@ As you celebrate another year, remember what Jungkook told us: "Even if you're n
 
 Happy Birthday! 생일 축하해요!`,
     closing: "Golden vibes only,",
-    signature: "Your ARMY Family 💜"
+    signature: "Your ARMY Family 💜",
   },
   jin: {
     greeting: "Dear ARMY,",
@@ -60,8 +61,8 @@ Eat well today! Jin would want you to enjoy some good food on your special day.
 
 Happy Birthday! 생일 축하해요!`,
     closing: "With worldwide handsome energy,",
-    signature: "Your ARMY Family 💜"
-  }
+    signature: "Your ARMY Family 💜",
+  },
 };
 
 const LetterPage = () => {
@@ -72,7 +73,6 @@ const LetterPage = () => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const letterRef = useRef(null);
-  const [hasLoggedEmptyTrackList, setHasLoggedEmptyTrackList] = useState(false);
 
   useEffect(() => {
     const selectedMember = location.state?.selectedMember || 'default';
@@ -84,35 +84,33 @@ const LetterPage = () => {
   const letterContent = letterContents[themeMode] || letterContents.default;
 
   useEffect(() => {
-    if (!trackList.length && !hasLoggedEmptyTrackList) {
-      console.warn('Track list is empty. Waiting for tracks to load.');
-      setHasLoggedEmptyTrackList(true);
-      return;
-    }
-
     if (!trackList.length) {
-      return;
+      return; // Silently wait for tracks without logging
     }
 
     let selectedTrack = null;
     if (themeMode === 'jungkook') {
-      selectedTrack = trackList.find(track => track.artists?.some(artist => artist.name === 'Jungkook'));
+      selectedTrack = trackList.find((track) =>
+        track.artists?.some((artist) => artist.name === 'Jungkook')
+      );
     } else if (themeMode === 'jin') {
-      selectedTrack = trackList.find(track => track.artists?.some(artist => artist.name === 'Jin'));
+      selectedTrack = trackList.find((track) =>
+        track.artists?.some((artist) => artist.name === 'Jin')
+      );
     } else {
-      selectedTrack = trackList[0];
+      selectedTrack = trackList.find((track) => track.preview_url) || trackList[0];
     }
 
-    if (selectedTrack) {
+    if (selectedTrack && selectedTrack.preview_url) {
       playTrack(selectedTrack.id);
     } else {
-      console.warn(`No track found for themeMode: ${themeMode}.`);
+      console.warn(`No playable track found for themeMode: ${themeMode}.`);
     }
 
     return () => {
       pauseTrack();
     };
-  }, [themeMode, playTrack, pauseTrack, trackList, hasLoggedEmptyTrackList]);
+  }, [themeMode, playTrack, pauseTrack, trackList]);
 
   const revealLetter = () => {
     setIsRevealed(true);
@@ -146,16 +144,22 @@ const LetterPage = () => {
                 left: `${Math.random() * 100}%`,
                 animationDuration: `${Math.random() * 3 + 2}s`,
                 animationDelay: `${Math.random() * 2}s`,
-                backgroundColor: i % 5 === 0 ? theme.primary || '#6A1B9A' :
-                               i % 5 === 1 ? theme.accent || '#FF69B4' :
-                               i % 5 === 2 ? '#fff' :
-                               i % 5 === 3 ? '#FFD700' : '#AB47BC'
+                backgroundColor:
+                  i % 5 === 0
+                    ? theme.primary || '#6A1B9A'
+                    : i % 5 === 1
+                    ? theme.accent || '#FF69B4'
+                    : i % 5 === 2
+                    ? '#fff'
+                    : i % 5 === 3
+                    ? '#FFD700'
+                    : '#AB47BC',
               }}
             />
           ))}
         </div>
       )}
-      
+
       <motion.div
         className="letter-container"
         initial={{ opacity: 0, y: 20 }}
@@ -165,11 +169,7 @@ const LetterPage = () => {
       >
         {!isRevealed ? (
           <div className="envelope-container">
-            <motion.div
-              className="envelope"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
+            <motion.div className="envelope" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <div className="envelope-flap" />
               <div className="envelope-content">
                 <h2>A Special Birthday Message</h2>
@@ -193,30 +193,29 @@ const LetterPage = () => {
               <div className="letter-header">
                 <img
                   src={
-                    themeMode === 'jungkook' ? "/assets/images/bts/jk/jk-profile.jpeg" :
-                    themeMode === 'jin' ? "/assets/images/bts/jin/jin-profile.jpeg" :
-                    "/assets/images/bts/group/bts-group-silhouette.jpeg"
+                    themeMode === 'jungkook'
+                      ? '/assets/images/bts/jk/jk-profile.jpeg'
+                      : themeMode === 'jin'
+                      ? '/assets/images/bts/jin/jin-profile.jpeg'
+                      : '/assets/images/bts/group/bts-group-silhouette.jpeg'
                   }
                   alt="BTS"
                   className="letter-image"
                 />
               </div>
-              
+
               <div className="letter-body" style={{ whiteSpace: 'pre-wrap' }}>
-                <h2 className="letter-greeting">
-                  {letterContent.greeting}
-                </h2>
-                
-                <p className="letter-message">
-                  {letterContent.body}
-                </p>
-                
+                <h2 className="letter-greeting">{letterContent.greeting}</h2>
+
+                <p className="letter-message">{letterContent.body}</p>
+
                 <p className="letter-closing">
-                  {letterContent.closing}<br/>
+                  {letterContent.closing}
+                  <br />
                   <span className="signature">{letterContent.signature}</span>
                 </p>
               </div>
-              
+
               <motion.button
                 className="button"
                 onClick={goToMusicRoom}

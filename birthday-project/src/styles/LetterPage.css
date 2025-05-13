@@ -8,6 +8,16 @@
   padding: 20px;
 }
 
+/* Remove scrollbar */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Letter Container */
 .letter-container {
   width: 100%;
@@ -136,6 +146,18 @@
   font-weight: 600;
   font-size: 1.2rem;
   color: var(--primary-color);
+}
+
+/* Make button color cuter */
+button {
+  background-color: #ffb6c1; /* Light pink */
+  color: #ffffff;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #ff8da1; /* Slightly darker pink on hover */
 }
 
 /* Responsive Styles */

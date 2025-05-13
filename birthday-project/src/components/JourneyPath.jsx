@@ -59,8 +59,8 @@ const FloatingPhotos = ({ theme }) => {
             rotate: photo.rotate
           }}
           transition={{ 
-            delay: 1 + index * 2, // Increased delay: 1s base + 2s per photo
-            duration: 15, // Increased duration for slower animation
+            delay: 0.5 + index * 0.5, // Reduced delay: 0.5s base + 0.5s per photo
+            duration: 6, // Reduced duration for faster animation
             repeat: Infinity,
             repeatType: "reverse",
             ease: "easeInOut"
@@ -81,7 +81,7 @@ const BTSSymbols = ({ theme }) => {
   for (let i = 0; i < numberOfElements; i++) {
     const initialX = Math.random() * 100;
     const initialY = Math.random() * 100;
-    const delay = Math.random() * 8; // Increased max delay to 8s
+    const delay = Math.random() * 3; // Reduced max delay to 3s
     const size = 20 + Math.random() * 20;
 
     elements.push(
@@ -95,7 +95,7 @@ const BTSSymbols = ({ theme }) => {
         }}
         transition={{ 
           delay,
-          duration: 5 + Math.random() * 3, // Increased duration to 5-8s
+          duration: 4 + Math.random() * 2, // Reduced duration to 4-6s
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -116,7 +116,7 @@ const BTSSymbols = ({ theme }) => {
 
 const JourneyPath = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [activeMember, setActiveMember] = useState('default');
+  const [activeMember, setActiveMember] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const navigate = useNavigate();
   const { theme, changeThemeNew } = useTheme();
@@ -129,11 +129,11 @@ const JourneyPath = () => {
     if (currentStep < journeySteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep(current => current + 1);
-      }, 10000); // Increased to 10 seconds for each step
+      }, 8000); // Reduced to 8 seconds for each step
       return () => clearTimeout(timer);
     } else {
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 8000); // Increased confetti duration to 8s
+      setTimeout(() => setShowConfetti(false), 6000); // Reduced confetti duration to 6s
     }
   }, [currentStep, activeMember]);
 
@@ -175,8 +175,8 @@ const JourneyPath = () => {
               className="confetti"
               style={{
                 left: `${Math.random() * 100}%`,
-                animationDuration: `${Math.random() * 5 + 3}s`, // Increased confetti fall duration
-                animationDelay: `${Math.random() * 3}s`, // Increased delay range
+                animationDuration: `${Math.random() * 3 + 2}s`, // Reduced confetti fall duration
+                animationDelay: `${Math.random() * 1}s`, // Reduced delay range
                 backgroundColor: i % 5 === 0 ? theme.primary : 
                                i % 5 === 1 ? theme.accent : 
                                i % 5 === 2 ? '#fff' : 
@@ -197,7 +197,7 @@ const JourneyPath = () => {
           className="path-content"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }} // Increased duration to 1s, added delay
+          transition={{ duration: 0.8, delay: 0.4 }} // Reduced duration to 0.8s, delay to 0.4s
           key={currentStep}
         >
           <h2 className="title" style={{ color: theme.primary }}>{currentJourneyStep.title}</h2>
@@ -210,7 +210,7 @@ const JourneyPath = () => {
                 onClick={() => handleThemeChange('jungkook')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }} // Smoother hover/tap transition
+                transition={{ duration: 0.3 }} // Faster hover/tap transition
               >
                 <img src="/assets/images/bts/jk/jk-profile.jpeg" alt="Jungkook" />
                 <h3>Jungkook</h3>
@@ -221,7 +221,7 @@ const JourneyPath = () => {
                 onClick={() => handleThemeChange('default')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
                 <img src="/assets/images/bts/group/bts-main.jpeg" alt="BTS" />
                 <h3>All BTS</h3>
@@ -232,7 +232,7 @@ const JourneyPath = () => {
                 onClick={() => handleThemeChange('jin')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
                 <img src="/assets/images/bts/jin/jin.png" alt="Jin" />
                 <h3>Jin</h3>
@@ -240,33 +240,25 @@ const JourneyPath = () => {
             </div>
           )}
 
-          <div className="button">
+          <div className="navigation-buttons">
             {currentStep > 0 && (
               <motion.button
-                className="button"
+                className="button back-button"
                 onClick={handleBack}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                  background: `linear-gradient(90deg, ${theme.accent}, ${theme.primary})`,
-                  color: theme.secondary
-                }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
                 Back
               </motion.button>
             )}
 
             <motion.button
-              className="button"
+              className="button continue-button"
               onClick={handleContinue}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              style={{
-                background: `linear-gradient(90deg, ${theme.primary}, ${theme.accent})`,
-                color: theme.secondary
-              }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
               {currentStep === 0 ? 'Select & Continue' : currentStep === journeySteps.length - 1 ? 'Reveal Surprise' : 'Continue'}
             </motion.button>
@@ -281,7 +273,7 @@ const JourneyPath = () => {
               onClick={() => setCurrentStep(index)}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 8, delay: index * 3 }} // Increased duration to 8s, delay to 3s per step
+              transition={{ duration: 0.8, delay: index * 0.5 }} // Reduced duration to 0.8s, delay to 0.5s per step
             >
               <span className="step-number">{index + 1}</span>
               <span className="step-title">{step.title}</span>

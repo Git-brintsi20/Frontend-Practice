@@ -10,7 +10,7 @@
   --background-color: #4A148C; /* Deep purple base */
   --text-color: #FFFFFF; /* White for readability */
   --accent-color: #FF69B4; /* Vibrant pink (retained) */
-  --accent-gold: #FFD700; /* Gold for stars (retained) */
+  --accent-gold: #efd545; /* Gold for stars (retained) */
   --primary-gradient: linear-gradient(90deg, #7e5499, #93539e); /* Updated gradient */
   --gradient-color-1: #4A148C; /* Deep purple for wave */
   --gradient-color-2: #6A1B9A; /* Primary purple */
@@ -509,3 +509,4 @@ body {
   background: linear-gradient(135deg, #e0c3fc, #b266f5, #ff9cc7); /* Soft lavender to purple to pink */
   transition: background 0.5s ease;
 }
+

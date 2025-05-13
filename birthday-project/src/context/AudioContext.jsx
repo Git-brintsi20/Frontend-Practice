@@ -14,7 +14,8 @@ const AudioContext = createContext({
   previousTrack: () => {},
   seekTo: () => {},
   trackList: [],
-  error: null
+  error: null,
+  isLoading: true,
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -28,36 +29,50 @@ export const AudioProvider = ({ children }) => {
   const [trackList, setTrackList] = useState([]);
   const [previewUrls, setPreviewUrls] = useState({});
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchAttempts, setFetchAttempts] = useState(0);
   const audioRef = useRef(new Audio());
 
-  useEffect(() => {
-    const fetchTracks = async () => {
-      try {
-        console.log('Fetching BTS top tracks...');
-        const tracks = await getBTSTopTracks();
-        console.log('Tracks received:', tracks);
+  const fetchTracks = async () => {
+    try {
+      console.log('Fetching BTS tracks...');
+      const tracks = await getBTSTopTracks();
+      console.log('Tracks received:', tracks);
 
-        if (!tracks || tracks.length === 0) {
-          throw new Error('No tracks retrieved from Spotify.');
-        }
-
-        setTrackList(tracks);
-        const urls = {};
-        for (const track of tracks) {
-          urls[track.id] = track.preview_url;
-        }
-        setPreviewUrls(urls);
-
-        if (tracks.length > 0) {
-          setCurrentTrack(tracks[0].id);
-          playTrack(tracks[0].id);
-        }
-      } catch (err) {
-        console.error('Error fetching BTS tracks:', err);
-        setError('Failed to load BTS tracks. Please check your internet connection or try again later.');
+      if (!tracks || tracks.length === 0) {
+        throw new Error('No tracks retrieved from Spotify.');
       }
-    };
 
+      setTrackList(tracks);
+      const urls = {};
+      for (const track of tracks) {
+        urls[track.id] = track.preview_url || null;
+      }
+      setPreviewUrls(urls);
+
+      const firstPlayableTrack = tracks.find((track) => track.preview_url);
+      if (firstPlayableTrack) {
+        setCurrentTrack(firstPlayableTrack.id);
+        playTrack(firstPlayableTrack.id);
+      } else if (fetchAttempts < 3) {
+        console.warn(`No tracks with previews, retrying (${fetchAttempts + 1}/3)...`);
+        setFetchAttempts(fetchAttempts + 1);
+        setTimeout(fetchTracks, 1000); // Retry after 1s
+        return;
+      } else {
+        setError('No tracks with previews available. Try again later.');
+      }
+    } catch (err) {
+      console.error('Error fetching BTS tracks:', err);
+      setError('Failed to load tracks. Please check your connection and try again.');
+    } finally {
+      if (fetchAttempts >= 3 || trackList.some((track) => track.preview_url)) {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchTracks();
   }, []);
 
@@ -74,9 +89,8 @@ export const AudioProvider = ({ children }) => {
       nextTrack();
     };
 
-    const handleError = (e) => {
-      console.error('Audio playback error:', e);
-      setError('Failed to play the track. Skipping to next track...');
+    const handleError = () => {
+      setError('Failed to play track. Skipping to next...');
       nextTrack();
     };
 
@@ -99,9 +113,7 @@ export const AudioProvider = ({ children }) => {
     const audio = audioRef.current;
 
     if (!previewUrls[trackId]) {
-      console.error('No preview URL for track:', trackId);
-      setError('This track is unavailable. Skipping to next track...');
-      nextTrack();
+      nextTrack(); // Skip silently
       return;
     }
 
@@ -117,7 +129,7 @@ export const AudioProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       console.error('Error playing track:', err);
-      setError('Failed to play the track. Skipping to next track...');
+      setError('Failed to play track. Skipping to next...');
       nextTrack();
     }
   };
@@ -136,20 +148,50 @@ export const AudioProvider = ({ children }) => {
   };
 
   const nextTrack = () => {
-    const currentIndex = trackList.findIndex(track => track.id === currentTrack);
-    const nextIndex = (currentIndex + 1) % trackList.length;
-    if (trackList[nextIndex]) {
+    if (!trackList.length) {
+      setError('No tracks available.');
+      setIsPlaying(false);
+      return;
+    }
+
+    const currentIndex = trackList.findIndex((track) => track.id === currentTrack);
+    let nextIndex = (currentIndex + 1) % trackList.length;
+    let attempts = 0;
+
+    while (attempts < trackList.length && !previewUrls[trackList[nextIndex].id]) {
+      nextIndex = (nextIndex + 1) % trackList.length;
+      attempts++;
+    }
+
+    if (previewUrls[trackList[nextIndex].id]) {
       playTrack(trackList[nextIndex].id);
-    } else if (trackList[0]) {
-      playTrack(trackList[0].id);
+    } else {
+      setError('No more playable tracks available.');
+      setIsPlaying(false);
     }
   };
 
   const previousTrack = () => {
-    const currentIndex = trackList.findIndex(track => track.id === currentTrack);
-    const prevIndex = (currentIndex - 1 + trackList.length) % trackList.length;
-    if (trackList[prevIndex]) {
+    if (!trackList.length) {
+      setError('No tracks available.');
+      setIsPlaying(false);
+      return;
+    }
+
+    const currentIndex = trackList.findIndex((track) => track.id === currentTrack);
+    let prevIndex = (currentIndex - 1 + trackList.length) % trackList.length;
+    let attempts = 0;
+
+    while (attempts < trackList.length && !previewUrls[trackList[prevIndex].id]) {
+      prevIndex = (prevIndex - 1 + trackList.length) % trackList.length;
+      attempts++;
+    }
+
+    if (previewUrls[trackList[prevIndex].id]) {
       playTrack(trackList[prevIndex].id);
+    } else {
+      setError('No more playable tracks available.');
+      setIsPlaying(false);
     }
   };
 
@@ -168,7 +210,8 @@ export const AudioProvider = ({ children }) => {
         previousTrack,
         seekTo,
         trackList,
-        error
+        error,
+        isLoading,
       }}
     >
       {children}
