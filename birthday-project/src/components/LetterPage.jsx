@@ -50,7 +50,7 @@ Happy Birthday! 생일 축하해요!`,
     greeting: "Dear ARMY,",
     body: `Happy Worldwide Handsome Birthday to you! (Jin would approve of this greeting!)
 
-As our Jin-hyung would say, "You know what? I'm worldwide handsome, you know?" And today, on your birthday, you're the worldwide handsome/beautiful one!
+As our Jin-hyung would say, "You know what? I'm worldwide handsome, you know?" And today, on your birthday, you're the worldwide beautiful one!
 
 Jin always brings laughter and joy with his dad jokes and windshield-wiper laugh. We hope your day is filled with just as much happiness and laughter.
 

@@ -510,3 +510,7 @@ body {
   transition: background 0.5s ease;
 }
 
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

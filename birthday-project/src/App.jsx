@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
@@ -10,21 +9,20 @@ import MusicRoom from './pages/MusicRoom';
 import './App.css';
 
 const AudioController = () => {
-  const { playTrack, pauseTrack, trackList, currentTrack } = useAudio();
+  const { bgMusic } = useAudio();
   const location = useLocation();
 
   useEffect(() => {
-    if (trackList.length === 0) return;
-
-    // Pause music in Music Room to avoid overlap with MusicPlayer
     if (location.pathname === '/music-room') {
-      pauseTrack();
+      bgMusic.pause();
     } else {
-      if (!currentTrack) {
-        playTrack(trackList[0].id);
+      if (!bgMusic.isPlaying) {
+        bgMusic.play().catch((err) => {
+          console.error('Failed to play background music:', err);
+        });
       }
     }
-  }, [location.pathname, trackList, currentTrack, playTrack, pauseTrack]);
+  }, [location.pathname, bgMusic]);
 
   return null;
 };
