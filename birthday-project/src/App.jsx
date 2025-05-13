@@ -34,6 +34,7 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <AudioProvider>
+          <AudioController />
           <div className="App">
             <Routes>
               <Route path="/" element={<IntroAnimation />} />

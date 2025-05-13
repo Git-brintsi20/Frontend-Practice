@@ -195,7 +195,7 @@ const MusicRoom = () => {
         {[...Array(5)].map((_, i) => (
           <img
             key={i}
-            src={i % 2 === 0 ? '/assets/images/bts/symbols/icon-4.png' : '/assets/images/bts/symbols/icon-5.png'}
+            src={i % 2 === 0 ? '/assets/images/bts/symbols/icon-4.jpg' : '/assets/images/bts/symbols/icon-5.jpg'}
             alt="BTS Element"
             className="floating-element"
             style={{

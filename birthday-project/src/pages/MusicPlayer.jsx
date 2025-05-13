@@ -34,7 +34,7 @@ const MusicPlayer = () => {
       name: currentTrack.name,
       artist: currentTrack.artists.map((artist) => artist.name).join(', '),
       album: currentTrack.album.name,
-      cover: currentTrack.album.images[0]?.url || '/assets/images/bts/group/bts-main.jpeg',
+      cover: currentTrack.album.images[0]?.url || './assets/images/bts/group/bts-main.jpeg',
     });
 
     const bars = Array.from({ length: 20 }, () => Math.random() * 50 + 5);
