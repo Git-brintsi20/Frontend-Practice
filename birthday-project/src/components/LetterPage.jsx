@@ -1,12 +1,11 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAudio } from '../context/AudioContext';
 import { useTheme } from '../context/ThemeContext';
 import NavBar from '../components/NavBar';
 import '../styles/LetterPage.css';
 
-// [LetterContents unchanged, keeping it as provided]
 const letterContents = {
   default: {
     greeting: "To My Dearest Sunshine Soul on her Birthday ✨",
@@ -69,7 +68,6 @@ const LetterPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, themeMode, changeThemeNew } = useTheme();
-  const { playTrack, pauseTrack, trackList } = useAudio();
   const [isRevealed, setIsRevealed] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const letterRef = useRef(null);
@@ -82,35 +80,6 @@ const LetterPage = () => {
   }, [location.state, themeMode, changeThemeNew]);
 
   const letterContent = letterContents[themeMode] || letterContents.default;
-
-  useEffect(() => {
-    if (!trackList.length) {
-      return; // Silently wait for tracks without logging
-    }
-
-    let selectedTrack = null;
-    if (themeMode === 'jungkook') {
-      selectedTrack = trackList.find((track) =>
-        track.artists?.some((artist) => artist.name === 'Jungkook')
-      );
-    } else if (themeMode === 'jin') {
-      selectedTrack = trackList.find((track) =>
-        track.artists?.some((artist) => artist.name === 'Jin')
-      );
-    } else {
-      selectedTrack = trackList.find((track) => track.preview_url) || trackList[0];
-    }
-
-    if (selectedTrack && selectedTrack.preview_url) {
-      playTrack(selectedTrack.id);
-    } else {
-      console.warn(`No playable track found for themeMode: ${themeMode}.`);
-    }
-
-    return () => {
-      pauseTrack();
-    };
-  }, [themeMode, playTrack, pauseTrack, trackList]);
 
   const revealLetter = () => {
     setIsRevealed(true);

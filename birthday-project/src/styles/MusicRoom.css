@@ -1,27 +1,51 @@
+
 .music-room {
   min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
   position: relative;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .navbar-spacer {
-  height: 100px;
+  height: 60px;
 }
 
-.music-room-container {
+.wave-background {
+  background-size: cover;
+  background-position: center;
+}
+
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  padding: 2rem;
-  position: relative;
-  z-index: 10;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: fall 5s linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
 }
 
 .welcome-overlay {
@@ -30,25 +54,33 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(106, 27, 154, 0.9);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  z-index: 100;
+  align-items: center;
+  z-index: 1000;
   color: #fff;
   text-align: center;
 }
 
 .welcome-overlay h1 {
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .welcome-overlay p {
   font-size: 1.2rem;
-  font-family: 'Poppins', sans-serif;
+}
+
+.music-room-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  position: relative;
+  z-index: 10;
 }
 
 .room-header {
@@ -57,130 +89,187 @@
 }
 
 .room-header h1 {
-  font-size: 2.2rem;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
   font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  color: var(--primary-color);
 }
 
 .room-header p {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.search-container {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: var(--accent-color);
+}
+
+.suggestion-text {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--accent-color);
+  font-style: italic;
+}
+
+.error-message {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.error-message button {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error-message button:hover {
+  background-color: var(--accent-color);
+}
+
+.search-results {
+  margin-bottom: 2rem;
+}
+
+.search-results ul {
+  list-style: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.search-result-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.search-result-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  margin-right: 1rem;
+}
+
+.search-result-info {
+  flex: 1;
+}
+
+.search-result-name {
   font-size: 1.1rem;
   color: var(--text-color);
-  opacity: 0.8;
-  font-family: 'Poppins', sans-serif;
+}
+
+.search-result-artist {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.7;
 }
 
 .birthday-message {
   text-align: center;
   margin-top: 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  font-family: 'Poppins', sans-serif;
 }
 
-.error-message {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  background: rgba(255, 0, 0, 0.1);
-  padding: 0.5rem;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+.birthday-message p {
+  font-size: 1.2rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.retry-button {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-}
-
-.confetti-container {
+.floating-elements {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   pointer-events: none;
   z-index: 5;
 }
 
-.confetti {
+.floating-element {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  top: -10px;
-  animation: fall 5s linear forwards;
+  width: 50px;
+  height: 50px;
+  opacity: 0.7;
+  animation: float 10s infinite ease-in-out;
 }
 
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
   }
 }
 
 @media (max-width: 768px) {
-  .navbar-spacer {
-    height: 90px;
-  }
-
-  .music-room-container {
-    padding: 1.5rem;
-  }
-
-  .welcome-overlay h1 {
-    font-size: 2rem;
-  }
-
-  .welcome-overlay p {
-    font-size: 1rem;
-  }
-
   .room-header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .room-header p {
     font-size: 1rem;
   }
 
-  .birthday-message {
-    font-size: 1rem;
+  .search-input {
+    max-width: 400px;
+  }
+
+  .floating-element {
+    width: 40px;
+    height: 40px;
   }
 }
 
 @media (max-width: 480px) {
-  .navbar-spacer {
-    height: 80px;
-  }
-
-  .music-room-container {
-    padding: 1rem;
-  }
-
-  .welcome-overlay h1 {
-    font-size: 1.5rem;
-  }
-
-  .welcome-overlay p {
-    font-size: 0.9rem;
-  }
-
   .room-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
-  .room-header p {
-    font-size: 0.9rem;
+  .search-input {
+    max-width: 300px;
   }
 
-  .birthday-message {
-    font-size: 0.9rem;
+  .floating-element {
+    width: 30px;
+    height: 30px;
   }
 }

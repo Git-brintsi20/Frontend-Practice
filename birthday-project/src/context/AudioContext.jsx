@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { getBTSTopTracks } from '../utils/spotify';
+import { searchTracks } from '../utils/spotify';
 
 const AudioContext = createContext({
   playTrack: () => {},
@@ -10,12 +10,21 @@ const AudioContext = createContext({
   duration: 0,
   setVolume: () => {},
   volume: 1,
-  nextTrack: () => {},
-  previousTrack: () => {},
   seekTo: () => {},
-  trackList: [],
+  searchResults: [],
+  setSearchQuery: () => {},
+  selectTrack: () => {},
   error: null,
-  isLoading: true,
+  isLoading: false,
+  // Background music controls
+  bgMusic: {
+    isPlaying: false,
+    volume: 0.3,
+    play: () => {},
+    pause: () => {},
+    setVolume: () => {},
+  },
+  trackList: [],
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -26,55 +35,50 @@ export const AudioProvider = ({ children }) => {
   const [seek, setSeek] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
-  const [trackList, setTrackList] = useState([]);
-  const [previewUrls, setPreviewUrls] = useState({});
+  const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fetchAttempts, setFetchAttempts] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef(new Audio());
+  const bgMusicRef = useRef(new Audio('/assets/audio/background-music.mp3'));
+  const searchTimeoutRef = useRef(null);
+  
+  // Background music state
+  const [bgMusicPlaying, setBgMusicPlaying] = useState(false);
+  const [bgMusicVolume, setBgMusicVolume] = useState(0.3);
+  
+  // Track list for background music
+  const [trackList, setTrackList] = useState([
+    { id: 'background', name: 'Background Music', path: '/assets/audio/background-music.mp3' }
+  ]);
 
-  const fetchTracks = async () => {
-    try {
-      console.log('Fetching BTS tracks...');
-      const tracks = await getBTSTopTracks();
-      console.log('Tracks received:', tracks);
+  const setSearchQuery = async (query) => {
+    setIsLoading(true);
+    setError(null);
 
-      if (!tracks || tracks.length === 0) {
-        throw new Error('No tracks retrieved from Spotify.');
-      }
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
 
-      setTrackList(tracks);
-      const urls = {};
-      for (const track of tracks) {
-        urls[track.id] = track.preview_url || null;
-      }
-      setPreviewUrls(urls);
-
-      const firstPlayableTrack = tracks.find((track) => track.preview_url);
-      if (firstPlayableTrack) {
-        setCurrentTrack(firstPlayableTrack.id);
-        playTrack(firstPlayableTrack.id);
-      } else if (fetchAttempts < 3) {
-        console.warn(`No tracks with previews, retrying (${fetchAttempts + 1}/3)...`);
-        setFetchAttempts(fetchAttempts + 1);
-        setTimeout(fetchTracks, 1000); // Retry after 1s
-        return;
-      } else {
-        setError('No tracks with previews available. Try again later.');
-      }
-    } catch (err) {
-      console.error('Error fetching BTS tracks:', err);
-      setError('Failed to load tracks. Please check your connection and try again.');
-    } finally {
-      if (fetchAttempts >= 3 || trackList.some((track) => track.preview_url)) {
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const tracks = await searchTracks(query);
+        setSearchResults(tracks);
+        if (tracks.length === 0 && query.trim() !== '') {
+          setError('No tracks found with previews. Try another search.');
+        }
+      } catch (err) {
+        setError('Failed to search tracks. Please try again.');
+        setSearchResults([]);
+      } finally {
         setIsLoading(false);
       }
-    }
+    }, 500);
   };
 
-  useEffect(() => {
-    fetchTracks();
-  }, []);
+  const selectTrack = (track) => {
+    setCurrentTrack(track);
+    playTrack(track.id);
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -86,12 +90,12 @@ export const AudioProvider = ({ children }) => {
 
     const handleEnded = () => {
       setIsPlaying(false);
-      nextTrack();
+      setCurrentTrack(null);
     };
 
     const handleError = () => {
-      setError('Failed to play track. Skipping to next...');
-      nextTrack();
+      setError('Failed to play track.');
+      setIsPlaying(false);
     };
 
     audio.addEventListener('timeupdate', updateSeek);
@@ -105,21 +109,47 @@ export const AudioProvider = ({ children }) => {
     };
   }, []);
 
+  // Background music setup
+  useEffect(() => {
+    const bgMusic = bgMusicRef.current;
+    bgMusic.loop = true;
+    bgMusic.volume = bgMusicVolume;
+    
+    // Set up event listeners for background music
+    const handleBgMusicError = () => {
+      console.error('Failed to play background music');
+      setBgMusicPlaying(false);
+    };
+    
+    bgMusic.addEventListener('error', handleBgMusicError);
+    
+    return () => {
+      bgMusic.removeEventListener('error', handleBgMusicError);
+      bgMusic.pause();
+    };
+  }, []);
+
+  // Update background music volume when it changes
+  useEffect(() => {
+    bgMusicRef.current.volume = bgMusicVolume;
+  }, [bgMusicVolume]);
+
   useEffect(() => {
     audioRef.current.volume = volume;
   }, [volume]);
 
   const playTrack = async (trackId) => {
     const audio = audioRef.current;
+    const track = searchResults.find((t) => t.id === trackId);
 
-    if (!previewUrls[trackId]) {
-      nextTrack(); // Skip silently
+    if (!track || !track.preview_url) {
+      setError('No preview available for this track.');
       return;
     }
 
-    if (currentTrack !== trackId) {
-      audio.src = previewUrls[trackId];
-      setCurrentTrack(trackId);
+    if (currentTrack?.id !== trackId) {
+      audio.src = track.preview_url;
+      setCurrentTrack(track);
       setSeek(0);
     }
 
@@ -128,9 +158,8 @@ export const AudioProvider = ({ children }) => {
       setIsPlaying(true);
       setError(null);
     } catch (err) {
-      console.error('Error playing track:', err);
-      setError('Failed to play track. Skipping to next...');
-      nextTrack();
+      setError('Failed to play track.');
+      setIsPlaying(false);
     }
   };
 
@@ -147,51 +176,26 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
-  const nextTrack = () => {
-    if (!trackList.length) {
-      setError('No tracks available.');
-      setIsPlaying(false);
-      return;
-    }
-
-    const currentIndex = trackList.findIndex((track) => track.id === currentTrack);
-    let nextIndex = (currentIndex + 1) % trackList.length;
-    let attempts = 0;
-
-    while (attempts < trackList.length && !previewUrls[trackList[nextIndex].id]) {
-      nextIndex = (nextIndex + 1) % trackList.length;
-      attempts++;
-    }
-
-    if (previewUrls[trackList[nextIndex].id]) {
-      playTrack(trackList[nextIndex].id);
-    } else {
-      setError('No more playable tracks available.');
-      setIsPlaying(false);
+  // Background music controls
+  const playBgMusic = async () => {
+    const bgMusic = bgMusicRef.current;
+    
+    try {
+      await bgMusic.play();
+      setBgMusicPlaying(true);
+    } catch (err) {
+      console.error('Failed to play background music', err);
     }
   };
-
-  const previousTrack = () => {
-    if (!trackList.length) {
-      setError('No tracks available.');
-      setIsPlaying(false);
-      return;
-    }
-
-    const currentIndex = trackList.findIndex((track) => track.id === currentTrack);
-    let prevIndex = (currentIndex - 1 + trackList.length) % trackList.length;
-    let attempts = 0;
-
-    while (attempts < trackList.length && !previewUrls[trackList[prevIndex].id]) {
-      prevIndex = (prevIndex - 1 + trackList.length) % trackList.length;
-      attempts++;
-    }
-
-    if (previewUrls[trackList[prevIndex].id]) {
-      playTrack(trackList[prevIndex].id);
-    } else {
-      setError('No more playable tracks available.');
-      setIsPlaying(false);
+  
+  const pauseBgMusic = () => {
+    bgMusicRef.current.pause();
+    setBgMusicPlaying(false);
+  };
+  
+  const setBgVolume = (value) => {
+    if (value >= 0 && value <= 1) {
+      setBgMusicVolume(value);
     }
   };
 
@@ -206,12 +210,20 @@ export const AudioProvider = ({ children }) => {
         duration,
         setVolume,
         volume,
-        nextTrack,
-        previousTrack,
         seekTo,
-        trackList,
+        searchResults,
+        setSearchQuery,
+        selectTrack,
         error,
         isLoading,
+        bgMusic: {
+          isPlaying: bgMusicPlaying,
+          volume: bgMusicVolume,
+          play: playBgMusic,
+          pause: pauseBgMusic,
+          setVolume: setBgVolume,
+        },
+        trackList,
       }}
     >
       {children}
