@@ -47,12 +47,13 @@ export const AudioProvider = ({ children }) => {
   const [bgMusicPlaying, setBgMusicPlaying] = useState(false);
   const [bgMusicVolume, setBgMusicVolume] = useState(0.3);
   const initializedRef = useRef(false);
+  const pendingPlayRef = useRef(false); // Flag to prevent race conditions
 
   // Full track list based on your audio files
   const [trackList] = useState([
     { id: 'autumn-leaves', name: 'Autumn Leaves', path: '/assets/audio/AutumnLeaves.mp3', tile: '/assets/tiles/AutumnLeaves.png', artist: 'BTS' },
     { id: 'blue-and-grey', name: 'Blue & Grey', path: '/assets/audio/BlueAndGrey.mp3', tile: '/assets/tiles/BlueAndGrey.png', artist: 'BTS' },
-    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWithLuv.mp3', tile: '/assets/tiles/BoyWIthLuv.png', artist: 'BTS feat. Halsey' },
+    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWIthLuv.mp3', tile: '/assets/tiles/BoyWithLuv.png', artist: 'BTS feat. Halsey' },
     { id: 'butterfly', name: 'Butterfly', path: '/assets/audio/Butterfly.mp3', tile: '/assets/tiles/Butterfly.png', artist: 'BTS' },
     { id: 'crystal-snow', name: 'Crystal Snow', path: '/assets/audio/CrystalSnow.mp3', tile: '/assets/tiles/CrystalSnow.png', artist: 'BTS' },
     { id: 'dimple', name: 'Dimple', path: '/assets/audio/Dimple.mp3', tile: '/assets/tiles/Dimple.png', artist: 'BTS' },
@@ -71,7 +72,7 @@ export const AudioProvider = ({ children }) => {
     { id: 'moon', name: 'Moon', path: '/assets/audio/Moon.mp3', tile: '/assets/tiles/Moon.png', artist: 'Jin' },
     { id: 'pied-piper', name: 'Pied Piper', path: '/assets/audio/PiedPiper.mp3', tile: '/assets/tiles/PiedPiper.png', artist: 'BTS' },
     { id: 'singularity', name: 'Singularity', path: '/assets/audio/Singularity.mp3', tile: '/assets/tiles/Singularity.png', artist: 'V' },
-    { id: 'still-with-you', name: 'Still With You', path: '/assets/audio/StillWithYou.mp3', tile: '/assets/tiles/StillWithYou.png', artist: 'Jungkook' },
+    { id: 'still-with-you', name: 'Still With You', path: '/assets/audio/StillWIthYou.mp3', tile: '/assets/tiles/StillWithYou.png', artist: 'Jungkook' },
   ]);
 
   // Initialize shuffle queue when shuffle mode changes or track list updates
@@ -97,6 +98,8 @@ export const AudioProvider = ({ children }) => {
       }
       
       setShuffledQueue(newQueue);
+    } else {
+      setShuffledQueue([]); // Clear the shuffled queue when shuffle is off
     }
   }, [shuffle, trackList, currentTrack]);
 
@@ -133,6 +136,7 @@ export const AudioProvider = ({ children }) => {
         nextTrack();
       } else {
         setIsPlaying(false);
+        pendingPlayRef.current = false; // Reset pendingPlayRef to allow future play attempts
       }
     };
     
@@ -142,6 +146,7 @@ export const AudioProvider = ({ children }) => {
       console.error(errorMessage, e);
       setError(errorMessage);
       setIsPlaying(false);
+      pendingPlayRef.current = false;
       
       // Try to play next track if current one fails
       if (autoPlayNext) {
@@ -149,16 +154,32 @@ export const AudioProvider = ({ children }) => {
       }
     };
 
+    const handlePlay = () => {
+      console.log('Audio started playing:', audio.src);
+      setIsPlaying(true);
+      pendingPlayRef.current = false;
+    };
+
+    const handlePause = () => {
+      console.log('Audio paused:', audio.src);
+      setIsPlaying(false);
+      pendingPlayRef.current = false;
+    };
+
     audio.addEventListener('timeupdate', updateSeek);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
     audio.addEventListener('loadedmetadata', updateSeek);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
 
     return () => {
       audio.removeEventListener('timeupdate', updateSeek);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('loadedmetadata', updateSeek);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
     };
   }, [autoPlayNext]);
 
@@ -191,38 +212,65 @@ export const AudioProvider = ({ children }) => {
   }, [bgMusicVolume]);
 
   const playTrack = async (trackId) => {
+    if (pendingPlayRef.current) {
+      console.log('Another play operation is pending, please wait.');
+      return;
+    }
+
+    pendingPlayRef.current = true;
     try {
       const trackToPlay = trackList.find((t) => t.id === trackId);
       if (!trackToPlay) {
+        console.error('Track not found:', trackId);
         setError('Track not found.');
+        pendingPlayRef.current = false;
         return;
       }
 
+      console.log('Attempting to play track:', trackToPlay.name, trackToPlay.path);
+      console.log('Current track before update:', currentTrack ? currentTrack.name : 'None');
       setError(null);
       const audio = audioRef.current;
-      
+
+      // Fully reset the audio element
+      audio.pause();
+      audio.currentTime = 0;
+      audio.src = ''; // Clear the current source
+
       // Pause background music when playing a track
       pauseBgMusic();
 
-      // Set new track if different from current
-      if (!currentTrack || audio.src !== trackToPlay.path) {
-        audio.src = trackToPlay.path;
-        setCurrentTrack(trackToPlay);
-        setSeek(0);
-      }
+      // Always set the new track's source and update state
+      audio.src = trackToPlay.path;
+      setCurrentTrack(trackToPlay);
+      setSeek(0);
 
-      await audio.play();
-      setIsPlaying(true);
+      console.log('New audio source set to:', audio.src);
+
+      await audio.load(); // Ensure the new source is loaded
+      console.log('Audio loaded successfully for:', trackToPlay.name);
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.error('Audio play failed:', err);
+          setError(`Playback error: ${err.message || 'Unknown error'}`);
+          setIsPlaying(false);
+          pendingPlayRef.current = false;
+        });
+      }
     } catch (err) {
       console.error("Playback error:", err);
       setError(`Playback error: ${err.message || 'Unknown error'}`);
       setIsPlaying(false);
+      pendingPlayRef.current = false;
     }
   };
 
   const pauseTrack = () => {
+    console.log('Pausing track');
     audioRef.current.pause();
     setIsPlaying(false);
+    pendingPlayRef.current = false;
   };
 
   const seekTo = (time) => {
@@ -237,14 +285,14 @@ export const AudioProvider = ({ children }) => {
     if (!currentTrack) return;
     
     if (shuffle) {
-      // In shuffle mode, get the next track from our shuffled queue
       const currentIndex = shuffledQueue.findIndex((t) => t.id === currentTrack.id);
       const nextIndex = (currentIndex + 1) % shuffledQueue.length;
+      console.log('Playing next track (shuffle mode):', shuffledQueue[nextIndex]?.name);
       playTrack(shuffledQueue[nextIndex].id);
     } else {
-      // In normal mode, play the next track in the list
       const currentIndex = trackList.findIndex((t) => t.id === currentTrack.id);
       const nextIndex = (currentIndex + 1) % trackList.length;
+      console.log('Playing next track:', trackList[nextIndex].name);
       playTrack(trackList[nextIndex].id);
     }
   };
@@ -252,22 +300,20 @@ export const AudioProvider = ({ children }) => {
   const prevTrack = () => {
     if (!currentTrack) return;
     
-    // If we're more than 3 seconds into a song, go back to the start instead of previous track
     if (seek > 3) {
       seekTo(0);
       return;
     }
     
     if (shuffle) {
-      // In shuffle mode
       const currentIndex = shuffledQueue.findIndex((t) => t.id === currentTrack.id);
-      // We use length - 1 because JavaScript modulo can return negative numbers
       const prevIndex = (currentIndex - 1 + shuffledQueue.length) % shuffledQueue.length;
+      console.log('Playing previous track (shuffle mode):', shuffledQueue[prevIndex]?.name);
       playTrack(shuffledQueue[prevIndex].id);
     } else {
-      // In normal mode
       const currentIndex = trackList.findIndex((t) => t.id === currentTrack.id);
       const prevIndex = (currentIndex - 1 + trackList.length) % trackList.length;
+      console.log('Playing previous track:', trackList[prevIndex].name);
       playTrack(trackList[prevIndex].id);
     }
   };
@@ -297,11 +343,13 @@ export const AudioProvider = ({ children }) => {
   };
 
   const toggleAutoPlay = () => {
-    setAutoPlayNext(!autoPlayNext);
+    setAutoPlayNext(prev => !prev);
+    console.log('Auto Play Next toggled to:', !autoPlayNext);
   };
 
   const toggleShuffle = () => {
-    setShuffle(!shuffle);
+    setShuffle(prev => !prev);
+    console.log('Shuffle mode toggled to:', !shuffle);
   };
 
   return (
@@ -331,6 +379,7 @@ export const AudioProvider = ({ children }) => {
         toggleAutoPlay,
         shuffle,
         toggleShuffle,
+        shuffledQueue,
       }}
     >
       {children}

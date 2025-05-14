@@ -22,7 +22,9 @@ const TrackInfo = memo(({ currentTrack, isExpanded }) => {
   if (!isExpanded) {
     return (
       <div className="mini-player-info">
-        <img src={currentTrack.tile} alt={`${currentTrack.name} Mini`} className="mini-cover" />
+        <div className="mini-cover-wrapper">
+          <img src={currentTrack.tile} alt={`${currentTrack.name} Mini`} className="mini-cover" />
+        </div>
         <div className="mini-text">
           <div className="track-name">{currentTrack.name}</div>
           <div className="track-artist">{currentTrack.artist}</div>
@@ -34,7 +36,7 @@ const TrackInfo = memo(({ currentTrack, isExpanded }) => {
 });
 
 // Main component
-const MusicPlayer = () => {
+const MusicPlayer = ({ className }) => {
   const {
     playTrack,
     pauseTrack,
@@ -59,7 +61,6 @@ const MusicPlayer = () => {
   const progressRef = useRef(null);
   const volumeRef = useRef(null);
 
-  // Memoize handlers with useCallback to prevent recreation on render
   const handleProgressClick = useCallback((e) => {
     if (!progressRef.current || !duration) return;
     const rect = progressRef.current.getBoundingClientRect();
@@ -70,9 +71,9 @@ const MusicPlayer = () => {
     }
   }, [duration, seekTo]);
 
-  const handleVolumeChange = useCallback((e) => {
-    if (!volumeRef.current) return;
-    const rect = volumeRef.current.getBoundingClientRect();
+  const handleVolumeChange = useCallback((e, ref) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
     const newVolume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     setVolume(newVolume);
   }, [setVolume]);
@@ -112,15 +113,21 @@ const MusicPlayer = () => {
     return (
       <motion.div 
         className="music-player-placeholder"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="placeholder-message">
-          <div className="placeholder-icon">
-            <MdMusicNote />
+        <div className="placeholder-content">
+          <div className="placeholder-message">
+            <h3>BTS Music Room</h3>
+            <p>Select a song to start your musical journey! 💜</p>
           </div>
-          <span>Select a song to start your BTS journey! 💜</span>
+          <img 
+            src="/assets/images/bts/symbols/bts-logo.png" 
+            alt="BTS Logo" 
+            className="placeholder-image" 
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
         </div>
       </motion.div>
     );
@@ -128,9 +135,9 @@ const MusicPlayer = () => {
 
   return (
     <motion.div
-      className={`music-player-container ${isExpanded ? 'expanded' : ''}`}
-      initial={{ opacity: 0, y: 60 }}
-      animate={{ opacity: 1, y: 0 }}
+      className={`music-player-container ${className} ${isExpanded ? 'expanded' : ''}`}
+      initial={{ opacity: 0, x: 60 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
     >
       <div className="music-player-bg"></div>
@@ -202,6 +209,40 @@ const MusicPlayer = () => {
 
           <div className="player-controls">
             <div className="left-controls">
+              <div className="volume-control">
+                <button 
+                  className="volume-icon" 
+                  onClick={toggleVolumeSlider}
+                >
+                  {volume === 0 ? (
+                    <MdVolumeOff />
+                  ) : volume < 0.3 ? (
+                    <MdVolumeMute />
+                  ) : volume < 0.7 ? (
+                    <MdVolumeDown />
+                  ) : (
+                    <MdVolumeUp />
+                  )}
+                </button>
+                
+                <AnimatePresence>
+                  {showVolumeSlider && (
+                    <motion.div 
+                      className="volume-slider-container"
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: '100px' }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="volume-slider" ref={volumeRef} onClick={(e) => handleVolumeChange(e, volumeRef)}>
+                        <div className="volume-track"></div>
+                        <div className="volume-progress" style={{ width: `${volume * 100}%` }}></div>
+                        <div className="volume-handle" style={{ left: `${volume * 100}%` }}></div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <button 
                 className={`control-button ${shuffle ? 'active' : ''}`} 
                 onClick={toggleShuffle}
@@ -228,43 +269,6 @@ const MusicPlayer = () => {
               <button className="control-button next-button" onClick={nextTrack}>
                 <MdSkipNext />
               </button>
-            </div>
-            
-            <div className="right-controls">
-              <div className="volume-control">
-                <button 
-                  className="volume-icon" 
-                  onClick={toggleVolumeSlider}
-                >
-                  {volume === 0 ? (
-                    <MdVolumeOff />
-                  ) : volume < 0.3 ? (
-                    <MdVolumeMute />
-                  ) : volume < 0.7 ? (
-                    <MdVolumeDown />
-                  ) : (
-                    <MdVolumeUp />
-                  )}
-                </button>
-                
-                <AnimatePresence>
-                  {showVolumeSlider && (
-                    <motion.div 
-                      className="volume-slider-container"
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: '100px' }}
-                      exit={{ opacity: 0, width: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="volume-slider" ref={volumeRef} onClick={handleVolumeChange}>
-                        <div className="volume-track"></div>
-                        <div className="volume-progress" style={{ width: `${volume * 100}%` }}></div>
-                        <div className="volume-handle" style={{ left: `${volume * 100}%` }}></div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             </div>
           </div>
         </div>

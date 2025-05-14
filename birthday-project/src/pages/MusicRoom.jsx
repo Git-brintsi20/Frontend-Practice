@@ -5,6 +5,7 @@ import { useAudio } from '../context/AudioContext';
 import { useLocation } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import MusicPlayer from './MusicPlayer';
+import { MdPlayArrow, MdPause } from 'react-icons/md';
 import '../styles/MusicRoom.css';
 
 // Memoized SongTile component to prevent unnecessary re-renders
@@ -27,13 +28,7 @@ const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay, onPause }) =>
               }
             }}
           >
-            <svg viewBox="0 0 24 24">
-              {isCurrentTrack && isPlaying ? (
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-              ) : (
-                <path d="M8 5v14l11-7z" />
-              )}
-            </svg>
+            {isCurrentTrack && isPlaying ? <MdPause /> : <MdPlayArrow />}
           </button>
         </div>
       </div>
@@ -56,6 +51,9 @@ const FloatingElement = memo(({ index, delay }) => {
         top: `${20 + index * 20}%`,
         left: `${15 + index * 20}%`,
         animationDelay: `${delay}s`,
+      }}
+      onError={(e) => {
+        e.target.style.display = 'none'; // Hide broken images
       }}
     />
   );
@@ -85,7 +83,7 @@ const MusicRoom = () => {
 
   // Memoized filtered tracks to prevent unnecessary recalculations
   const sortedTracks = useMemo(() => {
-    let sorted = [...trackList];
+    let sorted = [...(trackList || [])];
     
     if (activeCategory === 'solo') {
       sorted = sorted.filter(track => 
@@ -158,7 +156,7 @@ const MusicRoom = () => {
       }}
     >
       <NavBar />
-
+      <div className="navbar-spacer"></div>
       <AnimatePresence>
         {showWelcome && (
           <motion.div
@@ -177,68 +175,77 @@ const MusicRoom = () => {
         )}
       </AnimatePresence>
 
-      <div className="music-room-container">
-        <div className="room-header">
-          <h1>BTS Music Room</h1>
-          <p>Choose a song and vibe with BTS! 💜</p>
+      <div className="music-room-content">
+        <div className="music-room-container">
+          <div className="room-header">
+            <h1>BTS Music Room</h1>
+            <p>Choose a song and vibe with BTS! 💜</p>
+            
+            <div className="filter-categories">
+              <button 
+                className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+                onClick={() => handleCategoryChange('all')}
+              >
+                All Songs
+              </button>
+              <button 
+                className={`category-btn ${activeCategory === 'group' ? 'active' : ''}`}
+                onClick={() => handleCategoryChange('group')}
+              >
+                Group Songs
+              </button>
+              <button 
+                className={`category-btn ${activeCategory === 'solo' ? 'active' : ''}`}
+                onClick={() => handleCategoryChange('solo')}
+              >
+                Solo Songs
+              </button>
+              <button 
+                className={`category-btn ${activeCategory === 'featured' ? 'active' : ''}`}
+                onClick={() => handleCategoryChange('featured')}
+              >
+                Featured
+              </button>
+            </div>
+          </div>
+
+          <motion.div 
+            className="song-grid"
+            animate={{ opacity: isAnimating ? 0.8 : 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            {sortedTracks.length > 0 ? (
+              sortedTracks.map((track) => (
+                <SongTile
+                  key={track.id}
+                  track={track}
+                  isPlaying={isPlaying}
+                  isCurrentTrack={currentTrack?.id === track.id}
+                  onPlay={handlePlayTrack}
+                  onPause={handlePauseTrack}
+                />
+              ))
+            ) : (
+              <div className="no-tracks-message">
+                No tracks available. Please try again later.
+              </div>
+            )}
+          </motion.div>
           
-          <div className="filter-categories">
-            <button 
-              className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
-              onClick={() => handleCategoryChange('all')}
-            >
-              All Songs
-            </button>
-            <button 
-              className={`category-btn ${activeCategory === 'group' ? 'active' : ''}`}
-              onClick={() => handleCategoryChange('group')}
-            >
-              Group Songs
-            </button>
-            <button 
-              className={`category-btn ${activeCategory === 'solo' ? 'active' : ''}`}
-              onClick={() => handleCategoryChange('solo')}
-            >
-              Solo Songs
-            </button>
-            <button 
-              className={`category-btn ${activeCategory === 'featured' ? 'active' : ''}`}
-              onClick={() => handleCategoryChange('featured')}
-            >
-              Featured
-            </button>
+          <div className="birthday-message-container">
+            <div className="birthday-message">
+              <p>Happy Birthday! 🎂 Enjoy your special day with BTS! 💜</p>
+            </div>
           </div>
         </div>
-
-        <motion.div 
-          className="song-grid"
-          animate={{ opacity: isAnimating ? 0.8 : 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {sortedTracks.map((track) => (
-            <SongTile
-              key={track.id}
-              track={track}
-              isPlaying={isPlaying}
-              isCurrentTrack={currentTrack?.id === track.id}
-              onPlay={handlePlayTrack}
-              onPause={handlePauseTrack}
-            />
-          ))}
-        </motion.div>
-        
-        <div className="birthday-message-container">
-          <div className="birthday-message">
-            <p>Happy Birthday! 🎂 Enjoy your special day with BTS! 💜</p>
-          </div>
+        <div className="music-player-right-wrapper">
+          <MusicPlayer className="music-player-container-right" />
         </div>
       </div>
 
       <div className="floating-elements">
         {floatingElements}
       </div>
-
-      <MusicPlayer />
     </div>
   );
 };
