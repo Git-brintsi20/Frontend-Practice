@@ -12,14 +12,14 @@ import '../styles/MusicRoom.css';
 const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay, onPause }) => {
   return (
     <motion.div
-      className={`song-tile ${isCurrentTrack && isPlaying ? 'playing' : ''}`}
+      className={`music-room-song-tile ${isCurrentTrack && isPlaying ? 'playing' : ''}`}
       transition={{ duration: 0.3 }}
     >
-      <div className="song-tile-image-wrapper">
-        <img src={track.tile} alt={track.name} className="song-tile-image" />
-        <div className="tile-overlay">
+      <div className="music-room-song-tile-image-wrapper">
+        <img src={track.tile} alt={track.name} className="music-room-song-tile-image" />
+        <div className="music-room-tile-overlay">
           <button 
-            className="play-button-large"
+            className="music-room-play-button-large"
             onClick={() => {
               if (isCurrentTrack && isPlaying) {
                 onPause();
@@ -32,7 +32,7 @@ const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay, onPause }) =>
           </button>
         </div>
       </div>
-      <div className="song-tile-info">
+      <div className="music-room-song-tile-info">
         <h3>{track.name}</h3>
         <p>{track.artist}</p>
       </div>
@@ -46,7 +46,7 @@ const FloatingElement = memo(({ index, delay }) => {
     <img
       src={index % 2 === 0 ? '/assets/images/bts/symbols/icon-4.jpg' : '/assets/images/bts/symbols/icon-5.jpg'}
       alt="BTS Element"
-      className="floating-element"
+      className="music-room-floating-element"
       style={{
         top: `${20 + index * 20}%`,
         left: `${15 + index * 20}%`,
@@ -155,12 +155,12 @@ const MusicRoom = () => {
         '--accent-color': theme.accent,
       }}
     >
-      <NavBar />
-      <div className="navbar-spacer"></div>
+      <NavBar className="music-room-navbar" />
+      <div className="music-room-navbar-spacer"></div>
       <AnimatePresence>
         {showWelcome && (
           <motion.div
-            className="welcome-overlay"
+            className="music-room-welcome-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.3 } }}
@@ -177,31 +177,32 @@ const MusicRoom = () => {
 
       <div className="music-room-content">
         <div className="music-room-container">
-          <div className="room-header">
+          <div className="music-room-header">
+            <p>(:)</p>
             <h1>BTS Music Room</h1>
             <p>Choose a song and vibe with BTS! 💜</p>
             
-            <div className="filter-categories">
+            <div className="music-room-filter-categories">
               <button 
-                className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+                className={`music-room-category-btn ${activeCategory === 'all' ? 'active' : ''}`}
                 onClick={() => handleCategoryChange('all')}
               >
                 All Songs
               </button>
               <button 
-                className={`category-btn ${activeCategory === 'group' ? 'active' : ''}`}
+                className={`music-room-category-btn ${activeCategory === 'group' ? 'active' : ''}`}
                 onClick={() => handleCategoryChange('group')}
               >
                 Group Songs
               </button>
               <button 
-                className={`category-btn ${activeCategory === 'solo' ? 'active' : ''}`}
+                className={`music-room-category-btn ${activeCategory === 'solo' ? 'active' : ''}`}
                 onClick={() => handleCategoryChange('solo')}
               >
                 Solo Songs
               </button>
               <button 
-                className={`category-btn ${activeCategory === 'featured' ? 'active' : ''}`}
+                className={`music-room-category-btn ${activeCategory === 'featured' ? 'active' : ''}`}
                 onClick={() => handleCategoryChange('featured')}
               >
                 Featured
@@ -210,7 +211,7 @@ const MusicRoom = () => {
           </div>
 
           <motion.div 
-            className="song-grid"
+            className="music-room-song-grid"
             animate={{ opacity: isAnimating ? 0.8 : 1 }}
             transition={{ duration: 0.2 }}
           >
@@ -226,14 +227,14 @@ const MusicRoom = () => {
                 />
               ))
             ) : (
-              <div className="no-tracks-message">
+              <div className="music-room-no-tracks-message">
                 No tracks available. Please try again later.
               </div>
             )}
           </motion.div>
           
-          <div className="birthday-message-container">
-            <div className="birthday-message">
+          <div className="music-room-birthday-message-container">
+            <div className="music-room-birthday-message">
               <p>Happy Birthday! 🎂 Enjoy your special day with BTS! 💜</p>
             </div>
           </div>
@@ -243,7 +244,7 @@ const MusicRoom = () => {
         </div>
       </div>
 
-      <div className="floating-elements">
+      <div className="music-room-floating-elements">
         {floatingElements}
       </div>
     </div>

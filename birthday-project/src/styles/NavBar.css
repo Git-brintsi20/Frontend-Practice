@@ -209,3 +209,36 @@
 html::-webkit-scrollbar, body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* Dynamic wave-like gradient background */
+.wave-background {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--gradient-color-1), var(--gradient-color-2), var(--gradient-color-3));
+  background-size: 200% 200%;
+  animation: waveGradient 12s ease-in-out infinite; /* Faster for more dynamic feel */
+}
+
+.wave-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 20, 140, 0.3) 0%,
+    rgba(106, 27, 154, 0.5) 50%,
+    rgba(171, 71, 188, 0.3) 100%
+  );
+  background-size: 200% 200%;
+  animation: waveGradient 18s ease-in-out infinite reverse; /* Slightly faster */
+  z-index: -1;
+}
+
+@keyframes waveGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
