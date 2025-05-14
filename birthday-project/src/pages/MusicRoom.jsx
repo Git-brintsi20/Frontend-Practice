@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { useAudio } from '../context/AudioContext';
@@ -7,17 +7,76 @@ import NavBar from '../components/NavBar';
 import MusicPlayer from './MusicPlayer';
 import '../styles/MusicRoom.css';
 
+// Memoized SongTile component to prevent unnecessary re-renders
+const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay }) => {
+  return (
+    <motion.div
+      className={`song-tile ${isCurrentTrack && isPlaying ? 'playing' : ''}`}
+      whileHover={{ 
+        scale: 1.05,
+        boxShadow: '0 8px 15px rgba(0,0,0,0.2)',
+        zIndex: 5
+      }}
+      onClick={() => onPlay(track.id)}
+    >
+      <div className="song-tile-image-wrapper">
+        <img src={track.tile} alt={track.name} className="song-tile-image" />
+        {isCurrentTrack && isPlaying && (
+          <div className="playing-wave">
+            {[...Array(4)].map((_, i) => (
+              <span key={i}></span>
+            ))}
+          </div>
+        )}
+        <div className="tile-overlay">
+          <button className="play-button-large">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div className="song-tile-info">
+        <h3>{track.name}</h3>
+        <p>{track.artist}</p>
+      </div>
+    </motion.div>
+  );
+});
+
+// Memoized floating element to optimize animations
+const FloatingElement = memo(({ index, delay }) => {
+  return (
+    <motion.img
+      src={index % 2 === 0 ? '/assets/images/bts/symbols/icon-4.jpg' : '/assets/images/bts/symbols/icon-5.jpg'}
+      alt="BTS Element"
+      className="floating-element"
+      animate={{ 
+        opacity: [0.4, 0.6, 0.4], 
+        y: [0, -10, 0],
+      }}
+      transition={{ 
+        duration: 6,
+        repeat: Infinity,
+        delay: delay
+      }}
+      style={{
+        top: `${20 + index * 20}%`,
+        left: `${15 + index * 20}%`,
+      }}
+    />
+  );
+});
+
 const MusicRoom = () => {
   const location = useLocation();
   const { theme, themeMode, changeThemeNew } = useTheme();
   const { trackList, playTrack, currentTrack, isPlaying } = useAudio();
-  const [showConfetti, setShowConfetti] = useState(true);
-  const [welcomeMessage, setWelcomeMessage] = useState(true);
-  const [sortedTracks, setSortedTracks] = useState([]);
+  const [showWelcome, setShowWelcome] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Update theme based on selected member
+  // Update theme based on selected member - memoized to prevent unnecessary theme changes
   useEffect(() => {
     const selectedMember = location.state?.selectedMember || 'default';
     if (selectedMember !== themeMode) {
@@ -25,19 +84,14 @@ const MusicRoom = () => {
     }
   }, [location.state, themeMode, changeThemeNew]);
 
-  // Initial animations and timers
+  // Initial animations and timers with cleanup
   useEffect(() => {
-    const confettiTimer = setTimeout(() => setShowConfetti(false), 6000);
-    const welcomeTimer = setTimeout(() => setWelcomeMessage(false), 4000);
-
-    return () => {
-      clearTimeout(confettiTimer);
-      clearTimeout(welcomeTimer);
-    };
+    const welcomeTimer = setTimeout(() => setShowWelcome(false), 3000);
+    return () => clearTimeout(welcomeTimer);
   }, []);
 
-  // Sort tracks by various criteria
-  useEffect(() => {
+  // Memoized filtered tracks to prevent unnecessary recalculations
+  const sortedTracks = useMemo(() => {
     let sorted = [...trackList];
     
     if (activeCategory === 'solo') {
@@ -54,20 +108,41 @@ const MusicRoom = () => {
       );
     }
     
-    setSortedTracks(sorted);
-    setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 600);
+    return sorted;
   }, [trackList, activeCategory]);
+
+  // Animation effect with single state update
+  useEffect(() => {
+    if (isAnimating) {
+      const timer = setTimeout(() => setIsAnimating(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnimating]);
+
+  // Memoized handler
+  const handleCategoryChange = useCallback((category) => {
+    if (category !== activeCategory) {
+      setActiveCategory(category);
+      setIsAnimating(true);
+    }
+  }, [activeCategory]);
+
+  // Memoized handler for playing tracks
+  const handlePlayTrack = useCallback((trackId) => {
+    playTrack(trackId);
+  }, [playTrack]);
 
   if (!theme) {
     return <div className="music-room-loading">Loading theme...</div>;
   }
 
-  const handleCategoryChange = (category) => {
-    if (category !== activeCategory) {
-      setActiveCategory(category);
-    }
-  };
+  // Create memoized array of floating elements
+  const floatingElements = useMemo(() => {
+    // Reduced from the original number to improve performance
+    return Array(4).fill().map((_, i) => (
+      <FloatingElement key={i} index={i} delay={i * 1.5} />
+    ));
+  }, []);
 
   return (
     <div
@@ -84,91 +159,30 @@ const MusicRoom = () => {
     >
       <NavBar />
 
-      {showConfetti && (
-        <div className="confetti-container">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="confetti"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-${Math.random() * 20 + 10}px`,
-                width: `${Math.random() * 10 + 5}px`,
-                height: `${Math.random() * 10 + 5}px`,
-                animationDuration: `${Math.random() * 4 + 2}s`,
-                animationDelay: `${Math.random() * 3}s`,
-                backgroundColor:
-                  i % 5 === 0
-                    ? theme.primary
-                    : i % 5 === 1
-                    ? theme.accent
-                    : i % 5 === 2
-                    ? '#ffffff'
-                    : i % 5 === 3
-                    ? '#ffcd00'
-                    : '#ff69b4',
-                transform: `rotate(${Math.random() * 360}deg)`,
-              }}
-            ></div>
-          ))}
-        </div>
-      )}
-
       <AnimatePresence>
-        {welcomeMessage && (
+        {showWelcome && (
           <motion.div
             className="welcome-overlay"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.5 } }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
           >
-            <motion.h1 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            >
+            <motion.h1>
               Welcome to the BTS Music Room! 💜
             </motion.h1>
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-            >
+            <motion.p>
               Enjoy our favorite songs and celebrate with the Bangtan Boys!
             </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div
-        className="music-room-container"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: welcomeMessage ? 4 : 0 }}
-      >
+      <div className="music-room-container">
         <div className="room-header">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            BTS Music Room
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Choose a song and vibe with BTS! 💜
-          </motion.p>
+          <h1>BTS Music Room</h1>
+          <p>Choose a song and vibe with BTS! 💜</p>
           
-          <motion.div 
-            className="filter-categories"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
+          <div className="filter-categories">
             <button 
               className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
               onClick={() => handleCategoryChange('all')}
@@ -193,97 +207,35 @@ const MusicRoom = () => {
             >
               Featured
             </button>
-          </motion.div>
+          </div>
         </div>
 
         <motion.div 
           className="song-grid"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: isAnimating ? 0.6 : 1 }}
-          transition={{ duration: 0.3 }}
+          animate={{ opacity: isAnimating ? 0.8 : 1 }}
+          transition={{ duration: 0.2 }}
         >
-          <AnimatePresence>
-            {sortedTracks.map((track, index) => (
-              <motion.div
-                key={track.id}
-                className={`song-tile ${currentTrack?.id === track.id && isPlaying ? 'playing' : ''}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                whileHover={{ 
-                  scale: 1.08, 
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                  zIndex: 10
-                }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => playTrack(track.id)}
-              >
-                <div className="song-tile-image-wrapper">
-                  <img src={track.tile} alt={track.name} className="song-tile-image" />
-                  {currentTrack?.id === track.id && isPlaying && (
-                    <div className="playing-wave">
-                      {[...Array(4)].map((_, i) => (
-                        <span key={i}></span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="tile-overlay">
-                    <button className="play-button-large">
-                      <svg viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="song-tile-info">
-                  <h3>{track.name}</h3>
-                  <p>{track.artist}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {sortedTracks.map((track) => (
+            <SongTile
+              key={track.id}
+              track={track}
+              isPlaying={isPlaying}
+              isCurrentTrack={currentTrack?.id === track.id}
+              onPlay={handlePlayTrack}
+            />
+          ))}
         </motion.div>
         
         <div className="birthday-message-container">
-          <motion.div 
-            className="birthday-message"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-          >
+          <div className="birthday-message">
             <p>Happy Birthday! 🎂 Enjoy your special day with BTS! 💜</p>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
+      {/* Optimized floating elements using memoization */}
       <div className="floating-elements">
-        {[...Array(10)].map((_, i) => (
-          <motion.img
-            key={i}
-            src={i % 3 === 0 ? '/assets/images/bts/symbols/icon-4.jpg' : 
-                 i % 3 === 1 ? '/assets/images/bts/symbols/icon-5.jpg' : 
-                 '/assets/images/bts/symbols/icon-6.jpg'}
-            alt="BTS Element"
-            className="floating-element"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ 
-              opacity: [0.4, 0.8, 0.4], 
-              scale: [0.8, 1.2, 0.8],
-              x: [`${Math.random() * 20}px`, `${-Math.random() * 20}px`, `${Math.random() * 20}px`],
-              y: [`${Math.random() * 20}px`, `${-Math.random() * 20}px`, `${Math.random() * 20}px`],
-            }}
-            transition={{ 
-              duration: Math.random() * 10 + 15,
-              repeat: Infinity,
-              delay: Math.random() * 5
-            }}
-            style={{
-              top: `${Math.random() * 80 + 10}%`,
-              left: `${Math.random() * 80 + 10}%`,
-            }}
-          />
-        ))}
+        {floatingElements}
       </div>
 
       <MusicPlayer />
@@ -291,4 +243,4 @@ const MusicRoom = () => {
   );
 };
 
-export default MusicRoom;
+export default React.memo(MusicRoom);

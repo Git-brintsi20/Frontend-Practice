@@ -1,7 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 
+// Memoized visualizer bar component to prevent unnecessary re-renders
+const VisualizerBar = memo(({ height, index, isPlaying }) => {
+  return (
+    <motion.div
+      className="visualizer-bar"
+      animate={{ 
+        height: isPlaying ? `${height}px` : '8px',
+        backgroundColor: isPlaying ? 
+          (index % 3 === 0 ? 'var(--primary-color)' : 
+           index % 3 === 1 ? 'var(--accent-color)' : 
+           'var(--secondary-color)') : 
+          'var(--primary-color)'
+      }}
+      // Use slower transitions for better performance
+      transition={{ duration: 0.25 }}
+    />
+  );
+});
+
+// Memoized track info component
+const TrackInfo = memo(({ currentTrack, isExpanded }) => {
+  if (!isExpanded) {
+    return (
+      <div className="mini-player-info">
+        <img src={currentTrack.tile} alt={`${currentTrack.name} Mini`} className="mini-cover" />
+        <div className="mini-text">
+          <div className="track-name">{currentTrack.name}</div>
+          <div className="track-artist">{currentTrack.artist}</div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+});
+
+// Main component
 const MusicPlayer = () => {
   const {
     playTrack,
@@ -22,30 +58,39 @@ const MusicPlayer = () => {
     toggleShuffle,
   } = useAudio();
 
-  const [visualizerBars, setVisualizerBars] = useState([]);
+  const [visualizerBars, setVisualizerBars] = useState(() => 
+    Array.from({ length: 28 }, () => Math.random() * 60 + 10)
+  );
   const [isExpanded, setIsExpanded] = useState(false);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const progressRef = useRef(null);
   const volumeRef = useRef(null);
+  const visualizerTimerRef = useRef(null);
 
-  // Generate visualizer bars - will be animated based on isPlaying state
+  // Generate visualizer bars - now with optimized animation frequency
   useEffect(() => {
-    const bars = Array.from({ length: 28 }, () => Math.random() * 60 + 10);
-    setVisualizerBars(bars);
-
-    let visualizerInterval;
+    // Clear any existing interval
+    if (visualizerTimerRef.current) {
+      clearInterval(visualizerTimerRef.current);
+    }
+    
+    // Only set up interval if playing
     if (isPlaying) {
-      visualizerInterval = setInterval(() => {
-        setVisualizerBars((prev) => prev.map(() => Math.random() * 60 + 10));
-      }, 150);
+      // Reduced frequency to 350ms from 150ms (less than half as frequent)
+      visualizerTimerRef.current = setInterval(() => {
+        setVisualizerBars(Array.from({ length: 28 }, () => Math.random() * 60 + 10));
+      }, 350);
     }
 
     return () => {
-      if (visualizerInterval) clearInterval(visualizerInterval);
+      if (visualizerTimerRef.current) {
+        clearInterval(visualizerTimerRef.current);
+      }
     };
   }, [isPlaying]);
 
-  const handleProgressClick = (e) => {
+  // Memoize handlers with useCallback to prevent recreation on render
+  const handleProgressClick = useCallback((e) => {
     if (!progressRef.current || !duration) return;
     const rect = progressRef.current.getBoundingClientRect();
     const percentage = (e.clientX - rect.left) / rect.width;
@@ -53,35 +98,37 @@ const MusicPlayer = () => {
     if (seekTime >= 0 && seekTime <= duration) {
       seekTo(seekTime);
     }
-  };
+  }, [duration, seekTo]);
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = useCallback((e) => {
     if (!volumeRef.current) return;
     const rect = volumeRef.current.getBoundingClientRect();
-    const newVolume = (e.clientX - rect.left) / rect.width;
-    if (newVolume >= 0 && newVolume <= 1) {
-      setVolume(newVolume);
-    }
-  };
+    const newVolume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    setVolume(newVolume);
+  }, [setVolume]);
 
-  const formatTime = (seconds) => {
+  const formatTime = useCallback((seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
+  }, []);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = useCallback(() => {
     if (isPlaying) {
       pauseTrack();
     } else if (currentTrack) {
       playTrack(currentTrack.id);
     }
-  };
+  }, [isPlaying, currentTrack, pauseTrack, playTrack]);
 
-  const togglePlayerExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const togglePlayerExpand = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
+  const toggleVolumeSlider = useCallback(() => {
+    setShowVolumeSlider(prev => !prev);
+  }, []);
 
   if (error && !currentTrack) {
     return (
@@ -116,7 +163,8 @@ const MusicPlayer = () => {
       className={`music-player-container ${isExpanded ? 'expanded' : ''}`}
       initial={{ opacity: 0, y: 60 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: 'easeOut' }}
+      // Slower animation for initial load
+      transition={{ duration: 0.8, ease: 'easeOut' }}
     >
       <div className="music-player-bg"></div>
       <div className="music-player">
@@ -145,10 +193,18 @@ const MusicPlayer = () => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.5 }}
               >
+                {/* Changed from continuous rotation to gentle pulse for better performance */}
                 <motion.div
                   className="album-cover"
-                  animate={{ rotate: isPlaying ? 360 : 0 }}
-                  transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                  animate={isPlaying ? {
+                    scale: [1, 1.03, 1],
+                    rotate: [0, 2, -2, 0]
+                  } : {}}
+                  transition={isPlaying ? {
+                    duration: 3, 
+                    repeat: Infinity, 
+                    ease: "easeInOut"
+                  } : {}}
                 >
                   <img src={currentTrack.tile} alt={`${currentTrack.name} Cover`} />
                 </motion.div>
@@ -161,15 +217,8 @@ const MusicPlayer = () => {
             )}
           </AnimatePresence>
 
-          {!isExpanded && (
-            <div className="mini-player-info">
-              <img src={currentTrack.tile} alt={`${currentTrack.name} Mini`} className="mini-cover" />
-              <div className="mini-text">
-                <div className="track-name">{currentTrack.name}</div>
-                <div className="track-artist">{currentTrack.artist}</div>
-              </div>
-            </div>
-          )}
+          {/* Memoized component for mini player info */}
+          <TrackInfo currentTrack={currentTrack} isExpanded={isExpanded} />
 
           <div className="progress-container">
             <div className="time-info">
@@ -177,8 +226,14 @@ const MusicPlayer = () => {
               <span>{formatTime(duration)}</span>
             </div>
             <div className="progress-bar" ref={progressRef} onClick={handleProgressClick}>
-              <div className="progress" style={{ width: `${(seek / duration) * 100 || 0}%` }}></div>
-              <div className="progress-handle" style={{ left: `${(seek / duration) * 100 || 0}%` }}></div>
+              <div 
+                className="progress" 
+                style={{ width: `${(seek / duration) * 100 || 0}%` }}
+              />
+              <div 
+                className="progress-handle" 
+                style={{ left: `${(seek / duration) * 100 || 0}%` }}
+              />
             </div>
           </div>
 
@@ -233,7 +288,7 @@ const MusicPlayer = () => {
               <div className="volume-control">
                 <button 
                   className="volume-icon" 
-                  onClick={() => setShowVolumeSlider(!showVolumeSlider)}
+                  onClick={toggleVolumeSlider}
                 >
                   <svg viewBox="0 0 24 24">
                     {volume === 0 ? (
@@ -269,20 +324,14 @@ const MusicPlayer = () => {
             </div>
           </div>
 
+          {/* Optimized visualizer with fewer updates and memoized components */}
           <div className="visualizer">
             {visualizerBars.map((height, index) => (
-              <motion.div
+              <VisualizerBar
                 key={index}
-                className="visualizer-bar"
-                animate={{ 
-                  height: isPlaying ? `${height}px` : '8px',
-                  backgroundColor: isPlaying ? 
-                    (index % 3 === 0 ? 'var(--primary-color)' : 
-                     index % 3 === 1 ? 'var(--accent-color)' : 
-                     'var(--secondary-color)') : 
-                    'var(--primary-color)'
-                }}
-                transition={{ duration: 0.15 }}
+                height={height}
+                index={index}
+                isPlaying={isPlaying}
               />
             ))}
           </div>
@@ -292,4 +341,4 @@ const MusicPlayer = () => {
   );
 };
 
-export default MusicPlayer;
+export default React.memo(MusicPlayer);

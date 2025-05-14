@@ -64,7 +64,6 @@ export const AudioProvider = ({ children }) => {
     { id: 'jamais-vu', name: 'Jamais Vu', path: '/assets/audio/JamaisVu.mp3', tile: '/assets/tiles/JamaisVu.png', artist: 'BTS' },
     { id: 'just-one-day', name: 'Just One Day', path: '/assets/audio/JustOneDay.mp3', tile: '/assets/tiles/JustOneDay.png', artist: 'BTS' },
     { id: 'let-go', name: 'Let Go', path: '/assets/audio/LetGo.mp3', tile: '/assets/tiles/LetGo.png', artist: 'BTS' },
-    { id: 'life-goes-on', name: 'Life Goes On', path: '/assets/audio/Life_Goes_On.mp3', tile: '/assets/tiles/Life_Goes_On.png', artist: 'BTS' },
     { id: 'magic-shop', name: 'Magic Shop', path: '/assets/audio/MagicShop.mp3', tile: '/assets/tiles/MagicShop.png', artist: 'BTS' },
     { id: 'make-it-right', name: 'Make It Right', path: '/assets/audio/MakeItRight.mp3', tile: '/assets/tiles/MakeItRight.png', artist: 'BTS' },
     { id: 'mic-drop', name: 'MIC Drop', path: '/assets/audio/MicDrop.mp3', tile: '/assets/tiles/MicDrop.png', artist: 'BTS' },
@@ -118,7 +117,7 @@ export const AudioProvider = ({ children }) => {
         playBgMusic();
       }
     }
-  }, [location]);
+  }, [location, bgMusicPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -136,10 +135,10 @@ export const AudioProvider = ({ children }) => {
       }
     };
     
-    const handleError = () => {
+    const handleError = (e) => {
       const audioError = audio.error;
       const errorMessage = `Audio Playback Error: ${audioError?.message || 'Unknown error'}. Try another track.`;
-      console.error(errorMessage);
+      console.error(errorMessage, e);
       setError(errorMessage);
       setIsPlaying(false);
       
@@ -167,8 +166,8 @@ export const AudioProvider = ({ children }) => {
     bgMusic.loop = true;
     bgMusic.volume = bgMusicVolume;
     
-    const handleBgMusicError = () => {
-      console.warn('Background Music Error:', bgMusic.error);
+    const handleBgMusicError = (e) => {
+      console.warn('Background Music Error:', bgMusic.error, e);
       setBgMusicPlaying(false);
     };
     
@@ -191,30 +190,31 @@ export const AudioProvider = ({ children }) => {
   }, [bgMusicVolume]);
 
   const playTrack = async (trackId) => {
-    const trackToPlay = trackList.find((t) => t.id === trackId);
-    if (!trackToPlay) {
-      setError('Track not found.');
-      return;
-    }
-
-    setError(null);
-    const audio = audioRef.current;
-    
-    // Pause background music when playing a track
-    pauseBgMusic();
-
-    // Set new track if different from current
-    if (audio.src !== trackToPlay.path) {
-      audio.src = trackToPlay.path;
-      setCurrentTrack(trackToPlay);
-      setSeek(0);
-    }
-
     try {
+      const trackToPlay = trackList.find((t) => t.id === trackId);
+      if (!trackToPlay) {
+        setError('Track not found.');
+        return;
+      }
+
+      setError(null);
+      const audio = audioRef.current;
+      
+      // Pause background music when playing a track
+      pauseBgMusic();
+
+      // Set new track if different from current
+      if (!currentTrack || audio.src !== trackToPlay.path) {
+        audio.src = trackToPlay.path;
+        setCurrentTrack(trackToPlay);
+        setSeek(0);
+      }
+
       await audio.play();
       setIsPlaying(true);
     } catch (err) {
-      setError(`Playback error for "${trackToPlay.name}": ${err.message}`);
+      console.error("Playback error:", err);
+      setError(`Playback error: ${err.message || 'Unknown error'}`);
       setIsPlaying(false);
     }
   };

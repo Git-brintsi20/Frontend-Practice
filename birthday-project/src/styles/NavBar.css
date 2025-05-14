@@ -27,6 +27,7 @@
   align-items: center;
   border-bottom: 2px solid #ff9cc7; /* BTS pink */
   transition: all 0.3s ease;
+  margin-bottom: 20px;
 }
 
 /* Enhanced gradient animation */
