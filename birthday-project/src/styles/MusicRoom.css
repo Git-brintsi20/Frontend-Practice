@@ -1,3 +1,56 @@
+/* Wave background animation */
+@keyframes wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Confetti fall animation */
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Floating elements animation */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-25px) rotate(15deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+}
+
+/* Pulse animation for playing tile */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(171, 71, 188, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(171, 71, 188, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(171, 71, 188, 0);
+  }
+}
 
 .music-room {
   min-height: 100vh;
@@ -5,18 +58,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 30px;
   position: relative;
   overflow: hidden;
+  background-size: 200% 200%;
+  animation: wave 15s ease-in-out infinite;
 }
 
 .navbar-spacer {
-  height: 60px;
-}
-
-.wave-background {
-  background-size: cover;
-  background-position: center;
+  height: 70px;
 }
 
 .confetti-container {
@@ -31,21 +81,10 @@
 
 .confetti {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  animation: fall 5s linear infinite;
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(-100vh) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
+  animation: fall 6s linear infinite;
 }
 
 .welcome-overlay {
@@ -54,7 +93,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(106, 27, 154, 0.9);
+  background: rgba(106, 27, 154, 0.95);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -66,145 +105,139 @@
 
 .welcome-overlay h1 {
   font-family: 'Montserrat', sans-serif;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .welcome-overlay p {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 300;
 }
 
 .music-room-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 3rem 0;
   position: relative;
   z-index: 10;
 }
 
 .room-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .room-header h1 {
   font-family: 'Montserrat', sans-serif;
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: var(--primary-color);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .room-header p {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--text-color);
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-.search-container {
-  margin-bottom: 2rem;
-  text-align: center;
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 3rem;
 }
 
-.search-input {
+.song-tile {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.song-tile.playing {
+  animation: pulse 2s infinite;
+}
+
+.song-tile:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.song-tile-image {
   width: 100%;
-  max-width: 500px;
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 2px solid var(--primary-color);
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  outline: none;
-  transition: border-color 0.3s ease;
+  height: 140px;
+  object-fit: cover;
 }
 
-.search-input:focus {
-  border-color: var(--accent-color);
-}
-
-.suggestion-text {
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  color: var(--accent-color);
-  font-style: italic;
-}
-
-.error-message {
+.song-tile-info {
+  padding: 1rem;
   text-align: center;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
 }
 
-.error-message button {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.error-message button:hover {
-  background-color: var(--accent-color);
-}
-
-.search-results {
-  margin-bottom: 2rem;
-}
-
-.search-results ul {
-  list-style: none;
-  padding: 0;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.search-result-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.search-result-image {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-  margin-right: 1rem;
-}
-
-.search-result-info {
-  flex: 1;
-}
-
-.search-result-name {
-  font-size: 1.1rem;
+.song-tile-info h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: var(--text-color);
+  margin-bottom: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.search-result-artist {
+.song-tile-info p {
   font-size: 0.9rem;
   color: var(--text-color);
   opacity: 0.7;
 }
 
+.playing-indicator {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--primary-color);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.song-tile:hover .play-button {
+  opacity: 1;
+}
+
+.play-button svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--secondary-color);
+}
+
 .birthday-message {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .birthday-message p {
-  font-size: 1.2rem;
   font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .floating-elements {
@@ -219,62 +252,75 @@
 
 .floating-element {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  opacity: 0.7;
-  animation: float 10s infinite ease-in-out;
+  width: 60px;
+  height: 60px;
+  opacity: 0.6;
+  animation: float 12s infinite ease-in-out;
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-20px) rotate(10deg);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.7;
-  }
+.music-room-loading {
+  color: #fff;
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 2rem;
 }
 
 @media (max-width: 768px) {
+  .music-room {
+    padding: 20px;
+  }
+
+  .room-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .room-header p {
+    font-size: 1.2rem;
+  }
+
+  .song-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .song-tile-image {
+    height: 120px;
+  }
+
+  .floating-element {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .music-room {
+    padding: 15px;
+  }
+
   .room-header h1 {
     font-size: 2rem;
   }
 
-  .room-header p {
-    font-size: 1rem;
+  .welcome-overlay h1 {
+    font-size: 2.2rem;
   }
 
-  .search-input {
-    max-width: 400px;
+  .welcome-overlay p {
+    font-size: 1.1rem;
+  }
+
+  .song-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+
+  .song-tile-image {
+    height: 100px;
   }
 
   .floating-element {
     width: 40px;
     height: 40px;
   }
-}
-
-@media (max-width: 480px) {
-  .room-header h1 {
-    font-size: 1.8rem;
-  }
-
-  .search-input {
-    max-width: 300px;
-  }
-
-  .floating-element {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-
-html::-webkit-scrollbar, body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }

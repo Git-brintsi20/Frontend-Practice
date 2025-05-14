@@ -18,12 +18,12 @@ const themes = {
     fontFamily: "'Poppins', sans-serif"
   },
   jungkook: {
-    primary: '#FFD700',
+    primary: 'rgba(251, 14, 215, 0.85)',
     secondary: '#FFF9C4',
     background: '#FFFDE7',
     text: '#3E2723',
     accent: '#FFCA28',
-    gradient: 'linear-gradient(135deg, #FFD700, #FFF9C4)',
+    gradient: 'linear-gradient(135deg,rgba(251, 14, 215, 0.85), #FFF9C4)',
     fontFamily: "'Roboto', sans-serif"
   },
   jin: {

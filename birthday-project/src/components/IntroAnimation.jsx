@@ -109,6 +109,7 @@ const IntroAnimation = () => {
             transition={{ duration: 1, delay: 1.5 }}
           >
             A special BTS surprise awaits you!
+            <p>USE a Headset!</p>
           </motion.p>
           
           {showButton && (
