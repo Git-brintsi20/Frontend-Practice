@@ -8,30 +8,31 @@ import MusicPlayer from './MusicPlayer';
 import '../styles/MusicRoom.css';
 
 // Memoized SongTile component to prevent unnecessary re-renders
-const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay }) => {
+const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay, onPause }) => {
   return (
     <motion.div
       className={`song-tile ${isCurrentTrack && isPlaying ? 'playing' : ''}`}
-      whileHover={{ 
-        scale: 1.05,
-        boxShadow: '0 8px 15px rgba(0,0,0,0.2)',
-        zIndex: 5
-      }}
-      onClick={() => onPlay(track.id)}
+      transition={{ duration: 0.3 }}
     >
       <div className="song-tile-image-wrapper">
         <img src={track.tile} alt={track.name} className="song-tile-image" />
-        {isCurrentTrack && isPlaying && (
-          <div className="playing-wave">
-            {[...Array(4)].map((_, i) => (
-              <span key={i}></span>
-            ))}
-          </div>
-        )}
         <div className="tile-overlay">
-          <button className="play-button-large">
+          <button 
+            className="play-button-large"
+            onClick={() => {
+              if (isCurrentTrack && isPlaying) {
+                onPause();
+              } else {
+                onPlay(track.id);
+              }
+            }}
+          >
             <svg viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
+              {isCurrentTrack && isPlaying ? (
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              ) : (
+                <path d="M8 5v14l11-7z" />
+              )}
             </svg>
           </button>
         </div>
@@ -47,22 +48,14 @@ const SongTile = memo(({ track, isPlaying, isCurrentTrack, onPlay }) => {
 // Memoized floating element to optimize animations
 const FloatingElement = memo(({ index, delay }) => {
   return (
-    <motion.img
+    <img
       src={index % 2 === 0 ? '/assets/images/bts/symbols/icon-4.jpg' : '/assets/images/bts/symbols/icon-5.jpg'}
       alt="BTS Element"
       className="floating-element"
-      animate={{ 
-        opacity: [0.4, 0.6, 0.4], 
-        y: [0, -10, 0],
-      }}
-      transition={{ 
-        duration: 6,
-        repeat: Infinity,
-        delay: delay
-      }}
       style={{
         top: `${20 + index * 20}%`,
         left: `${15 + index * 20}%`,
+        animationDelay: `${delay}s`,
       }}
     />
   );
@@ -71,7 +64,7 @@ const FloatingElement = memo(({ index, delay }) => {
 const MusicRoom = () => {
   const location = useLocation();
   const { theme, themeMode, changeThemeNew } = useTheme();
-  const { trackList, playTrack, currentTrack, isPlaying } = useAudio();
+  const { trackList, playTrack, pauseTrack, currentTrack, isPlaying } = useAudio();
   const [showWelcome, setShowWelcome] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -129,8 +122,16 @@ const MusicRoom = () => {
 
   // Memoized handler for playing tracks
   const handlePlayTrack = useCallback((trackId) => {
+    if (currentTrack && currentTrack.id !== trackId && isPlaying) {
+      pauseTrack();
+    }
     playTrack(trackId);
-  }, [playTrack]);
+  }, [playTrack, pauseTrack, currentTrack, isPlaying]);
+
+  // Memoized handler for pausing tracks
+  const handlePauseTrack = useCallback(() => {
+    pauseTrack();
+  }, [pauseTrack]);
 
   if (!theme) {
     return <div className="music-room-loading">Loading theme...</div>;
@@ -138,7 +139,6 @@ const MusicRoom = () => {
 
   // Create memoized array of floating elements
   const floatingElements = useMemo(() => {
-    // Reduced from the original number to improve performance
     return Array(4).fill().map((_, i) => (
       <FloatingElement key={i} index={i} delay={i * 1.5} />
     ));
@@ -222,6 +222,7 @@ const MusicRoom = () => {
               isPlaying={isPlaying}
               isCurrentTrack={currentTrack?.id === track.id}
               onPlay={handlePlayTrack}
+              onPause={handlePauseTrack}
             />
           ))}
         </motion.div>
@@ -233,7 +234,6 @@ const MusicRoom = () => {
         </div>
       </div>
 
-      {/* Optimized floating elements using memoization */}
       <div className="floating-elements">
         {floatingElements}
       </div>

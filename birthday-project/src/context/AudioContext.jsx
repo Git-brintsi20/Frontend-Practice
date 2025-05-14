@@ -52,7 +52,7 @@ export const AudioProvider = ({ children }) => {
   const [trackList] = useState([
     { id: 'autumn-leaves', name: 'Autumn Leaves', path: '/assets/audio/AutumnLeaves.mp3', tile: '/assets/tiles/AutumnLeaves.png', artist: 'BTS' },
     { id: 'blue-and-grey', name: 'Blue & Grey', path: '/assets/audio/BlueAndGrey.mp3', tile: '/assets/tiles/BlueAndGrey.png', artist: 'BTS' },
-    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWithLuv.mp3', tile: '/assets/tiles/BoyWithLuv.png', artist: 'BTS feat. Halsey' },
+    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWithLuv.mp3', tile: '/assets/tiles/BoyWIthLuv.png', artist: 'BTS feat. Halsey' },
     { id: 'butterfly', name: 'Butterfly', path: '/assets/audio/Butterfly.mp3', tile: '/assets/tiles/Butterfly.png', artist: 'BTS' },
     { id: 'crystal-snow', name: 'Crystal Snow', path: '/assets/audio/CrystalSnow.mp3', tile: '/assets/tiles/CrystalSnow.png', artist: 'BTS' },
     { id: 'dimple', name: 'Dimple', path: '/assets/audio/Dimple.mp3', tile: '/assets/tiles/Dimple.png', artist: 'BTS' },
@@ -64,6 +64,7 @@ export const AudioProvider = ({ children }) => {
     { id: 'jamais-vu', name: 'Jamais Vu', path: '/assets/audio/JamaisVu.mp3', tile: '/assets/tiles/JamaisVu.png', artist: 'BTS' },
     { id: 'just-one-day', name: 'Just One Day', path: '/assets/audio/JustOneDay.mp3', tile: '/assets/tiles/JustOneDay.png', artist: 'BTS' },
     { id: 'let-go', name: 'Let Go', path: '/assets/audio/LetGo.mp3', tile: '/assets/tiles/LetGo.png', artist: 'BTS' },
+    { id: 'life-goes-on', name: 'Life Goes On', path: '/assets/audio/Life_Goes_On.mp3', tile: '/assets/tiles/LifeGoesOn.png', artist: 'BTS' },
     { id: 'magic-shop', name: 'Magic Shop', path: '/assets/audio/MagicShop.mp3', tile: '/assets/tiles/MagicShop.png', artist: 'BTS' },
     { id: 'make-it-right', name: 'Make It Right', path: '/assets/audio/MakeItRight.mp3', tile: '/assets/tiles/MakeItRight.png', artist: 'BTS' },
     { id: 'mic-drop', name: 'MIC Drop', path: '/assets/audio/MicDrop.mp3', tile: '/assets/tiles/MicDrop.png', artist: 'BTS' },
