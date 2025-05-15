@@ -53,7 +53,7 @@ export const AudioProvider = ({ children }) => {
   const [trackList] = useState([
     { id: 'autumn-leaves', name: 'Autumn Leaves', path: '/assets/audio/AutumnLeaves.mp3', tile: '/assets/tiles/AutumnLeaves.png', artist: 'BTS' },
     { id: 'blue-and-grey', name: 'Blue & Grey', path: '/assets/audio/BlueAndGrey.mp3', tile: '/assets/tiles/BlueAndGrey.png', artist: 'BTS' },
-    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWIthLuv.mp3', tile: '/assets/tiles/Boy.png', artist: 'BTS feat. Halsey' },
+    { id: 'boy-with-luv', name: 'Boy With Luv', path: '/assets/audio/BoyWIthLuv.mp3', tile: '/assets/tiles/BoyWithLuv.png', artist: 'BTS feat. Halsey' },
     { id: 'butterfly', name: 'Butterfly', path: '/assets/audio/Butterfly.mp3', tile: '/assets/tiles/Butterfly.png', artist: 'BTS' },
     { id: 'crystal-snow', name: 'Crystal Snow', path: '/assets/audio/CrystalSnow.mp3', tile: '/assets/tiles/CrystalSnow.png', artist: 'BTS' },
     { id: 'dimple', name: 'Dimple', path: '/assets/audio/Dimple.mp3', tile: '/assets/tiles/Dimple.png', artist: 'BTS' },
@@ -73,6 +73,7 @@ export const AudioProvider = ({ children }) => {
     { id: 'pied-piper', name: 'Pied Piper', path: '/assets/audio/PiedPiper.mp3', tile: '/assets/tiles/PiedPiper.png', artist: 'BTS' },
     { id: 'singularity', name: 'Singularity', path: '/assets/audio/Singularity.mp3', tile: '/assets/tiles/Singularity.png', artist: 'V' },
     { id: 'still-with-you', name: 'Still With You', path: '/assets/audio/StillWIthYou.mp3', tile: '/assets/tiles/StillWithYou.png', artist: 'Jungkook' },
+    
   ]);
 
   // Initialize shuffle queue when shuffle mode changes or track list updates
