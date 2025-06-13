@@ -78,27 +78,6 @@ An interactive, animated React application with advanced features:
 - **React Spring**: Physics-based animations
 - **Audio API**: Custom music player implementation
 
-#### 🧩 Project Structure
-```
-BirthdayProject/
-├── public/
-│   ├── assets/
-│   │   ├── images/
-│   │   │   ├── bts/
-│   │   │   └── backgrounds/
-│   │   └── audio/
-│   │       ├── tracks/
-│   │       └── covers/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── styles/
-│   ├── utils/
-│   ├── context/
-│   └── App.js
-└── package.json
-```
-
 #### 📱 Responsive Implementation
 - **Desktop**: Full-featured experience with advanced interactions
 - **Tablet**: Touch-optimized interface with adapted layouts
@@ -107,7 +86,7 @@ BirthdayProject/
 #### 🎨 Customization Features
 - Dynamic theme system with custom color schemes
 - Modular component architecture for easy content updates
-- Configurable audio playlist and cover art
+- Audio playlist and cover art
 - Extensible design for additional BTS members
 
 **Key Skills Developed**: Advanced React patterns, animation orchestration, audio integration, responsive design systems
